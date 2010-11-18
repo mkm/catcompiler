@@ -7,3 +7,4 @@ CC
 Lexer.sml
 Parser.sml
 Parser.output
+.DS_Store
