@@ -1,0 +1,4 @@
+// error02.cat
+// Adds a number and a boolean value
+
+write (3+true)

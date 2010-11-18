@@ -1,0 +1,6 @@
+// error19.cat
+// No matching tuple pattern
+
+type pair = (int,int)
+
+let (x,y) = @:pair in x

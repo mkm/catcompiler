@@ -1,0 +1,4 @@
+// error05.cat
+// number as condition in if-then-else
+
+if 3 then 4 else 5

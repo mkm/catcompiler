@@ -1,0 +1,9 @@
+// error13.cat
+// Pattern in function does not match declaration
+
+fun id : int -> int
+  x => x
+| false => 3
+end
+
+id 3

@@ -1,0 +1,9 @@
+*.uo
+*.ui
+*.asm
+*.test
+testresult
+CC
+Lexer.sml
+Parser.sml
+Parser.output

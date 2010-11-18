@@ -1,0 +1,7 @@
+// error18.cat
+// No matching boolean pattern
+
+case (read<7) of
+  false => write 4
+| false => write 5
+end

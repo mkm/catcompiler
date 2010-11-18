@@ -1,0 +1,12 @@
+// error10.cat
+// Two declarations of same function
+
+fun id : int -> int
+ x => x
+end
+
+fun id : int -> bool
+ x => true
+end
+
+id 3

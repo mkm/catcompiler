@@ -1,0 +1,4 @@
+// error06.cat
+// if-then-else with different branch types
+
+if true then 4 else false

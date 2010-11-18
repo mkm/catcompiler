@@ -1,0 +1,9 @@
+// pair.cat
+// reads two numbers, builds a pair, and prints the elements reversed
+
+type ii = (int,int)
+
+let (x,y) = (read,read):ii;
+    t1 = write y
+in
+  write x

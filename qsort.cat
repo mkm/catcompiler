@@ -1,0 +1,41 @@
+// qsort.cat
+// reads a number n and then n numbers which are sorted and printed
+
+type list = (int,list)
+
+type lili = (list,list)
+
+fun readList : int -> list
+  0 => @ : list
+| n => (read, readList(n-1)):list
+end
+
+fun printList : list -> bool
+  (n,l) => let t = write n in printList l
+| @ => true
+end
+
+fun append : lili -> list
+  (@,l2) => l2
+| ((n,l1),l2) => (n,append(l1,l2):lili):list
+end
+
+fun qsort : list -> list
+  @ => @ : list
+| (n,l) => append (qsort(smaller(n,l):list),
+  	   	   (n,qsort(larger(n,l):list)):list):lili
+end
+
+fun smaller : list -> list
+  (n,@) => @ : list
+| (n,(m,l)) => if m<n then (m,smaller(n,l):list):list
+               else smaller(n,l):list
+end
+
+fun larger : list -> list
+  (n,@) => @ : list
+| (n,(m,l)) => if not m<n then (m,larger(n,l):list):list
+  	       else larger(n,l):list
+end
+
+printList qsort readList read

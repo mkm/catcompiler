@@ -1,0 +1,8 @@
+// error09.cat
+// Two declarations of same type
+
+type list = (int,list)
+
+type list = (int,list)
+
+@:list

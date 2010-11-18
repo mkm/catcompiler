@@ -1,0 +1,58 @@
+
+%token <int*(int*int)> NUM
+%token <string*(int*int)> ID
+%token <(int*int)> PLUS MINUS
+%token <(int*int)> FUN LPAR RPAR ARROW
+%token <(int*int)> END MATCHARROW
+%token <(int*int)> INT BOOL BAR COLON
+%token <(int*int)> READ WRITE EOF
+
+%right BAR
+%right MATCHARROW
+%left PLUS MINUS
+%right WRITE
+
+%start Prog
+%type <Cat.Prog> Prog
+%type <Cat.Type> Type
+%type <Cat.Exp> Exp
+%type <Cat.Exp list> Exps
+%type <Cat.Match> Match
+%type <Cat.Pat> Pat
+%type <Cat.Pat list> Pats
+%type <Cat.FunDec list> FunDecs
+
+%%
+
+Prog :	  FunDecs Exp EOF
+	                { ([],$1,$2) }
+;
+
+FunDecs : FUN ID COLON Type ARROW Type Match END FunDecs
+			{ (#1 $2, $4, $6, $7, $1) :: $9 }
+	|		{ [] }
+;
+
+Type :	  INT		{ Cat.Int $1 }
+;
+
+Pat :	  NUM		{ Cat.NumP $1 }
+	| ID 		{ Cat.VarP $1 }
+;
+
+Match :	  Pat MATCHARROW Exp
+			{ [($1,$3)] }
+	| Match BAR Match
+			{ $1 @ $3 }
+;
+
+Exp :	  NUM		{ Cat.Num $1 }
+	| ID		{ Cat.Var $1 }
+	| Exp PLUS Exp	{ Cat.Plus ($1, $3, $2) }
+	| Exp MINUS Exp	{ Cat.Minus ($1, $3, $2) }
+	| ID Exp %prec WRITE
+			{ Cat.Apply (#1 $1, $2, #2 $1) }
+	| READ		{ Cat.Read $1 }
+	| WRITE Exp	{ Cat.Write ($2, $1) }
+	| LPAR Exp RPAR	{ $2 }
+;

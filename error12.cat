@@ -1,0 +1,8 @@
+// error12.cat
+// Function result does not match declaration
+
+fun id : int -> int
+ x => false
+end
+
+id 3

@@ -1,0 +1,9 @@
+// error17.cat
+// No matching integer pattern
+
+fun f : int -> int
+  3 => write 4
+| 4 => write 5
+end
+
+f read

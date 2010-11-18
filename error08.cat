@@ -1,0 +1,7 @@
+// error08.cat
+// Different type branches of case expression
+
+case 3 of
+  4 => 5
+| 5 => false
+end

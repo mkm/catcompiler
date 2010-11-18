@@ -1,0 +1,28 @@
+// logic.cat
+// tests logic operators
+
+type bi = (bool,int)
+
+type ii = (int,int)
+
+type i6 = (int,int,int,int,int,int)
+
+fun show : bi -> bool
+  (b,n) => let t = write n in b
+end
+
+fun test1 : ii -> int
+  (x,y) =>
+     if x<y and show(x=y,11):bi or show(y<x,12):bi then write 13
+     else write 14
+end
+
+fun test2 : ii -> int
+  (x,y) =>
+     if x<y or show(x=y,21):bi and show(y<x,22):bi then write 23
+     else write 24
+end
+
+(test1(2,3):ii, test2(2,3):ii,
+ test1(3,2):ii, test2(3,2):ii,
+ test1(2,2):ii, test2(2,2):ii):i6

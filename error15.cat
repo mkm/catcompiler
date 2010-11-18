@@ -1,0 +1,11 @@
+// error15.cat
+// tuple pattern of wrong length
+
+type t = (int,int)
+
+fun f : t -> int
+  (3,y)   => y
+| (x,3,y) => x+y
+end
+
+write f read

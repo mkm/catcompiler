@@ -1,0 +1,8 @@
+// error11.cat
+// function called with argument of wrong type
+
+fun id : int -> int
+ x => x
+end
+
+id false

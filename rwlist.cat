@@ -1,0 +1,16 @@
+// rwlist.cat
+// reads a number n and then n numbers which are printed
+
+type list = (int,list)
+
+fun readList : int -> list
+  0 => @ : list
+| n => (read, readList(n-1)):list
+end
+
+fun printList : list -> bool
+  @ => true
+| (n,l) => let t = write n in printList l
+end
+
+printList readList read

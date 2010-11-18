@@ -1,0 +1,9 @@
+// reverse.cat
+// Reads numbers until a 0 is read and then prints out in reverse order
+
+fun readwrite : int -> int
+  0 => 0
+| x => let y = write readwrite read in x
+end
+
+write readwrite read

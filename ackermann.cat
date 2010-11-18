@@ -1,0 +1,19 @@
+// ackermann.cat
+// calculates Ackermann's function
+// tests boolean patterns
+
+type ii = (int,int)
+
+type bb = (bool,bool)
+
+fun ackermann : ii -> int
+  (m,n) =>
+    case (m=0,n=0):bb of
+      (true,true) => 1
+    | (true,false) => n+1
+    | (false,false) => ackermann (m-1,ackermann(m,n-1):ii):ii
+    | (false,true) => ackermann (m-1,1):ii
+    end
+end
+
+write ackermann (read,read):ii

@@ -1,0 +1,7 @@
+// error14.cat
+// use of let-declared variable does not match declaration
+
+let x = read;
+    x = false
+in
+    x+x

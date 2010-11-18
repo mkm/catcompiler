@@ -1,0 +1,4 @@
+// error03.cat
+// compares a number and a boolean value
+
+3<true

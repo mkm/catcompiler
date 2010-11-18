@@ -1,0 +1,4 @@
+// error01.cat
+// writes a boolean value
+
+write true

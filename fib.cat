@@ -1,0 +1,10 @@
+// fib.cat
+// Fibonnaci's function
+
+fun fib : int -> int
+  0 => 0
+| 1 => 1
+| n => fib(n-1) + fib(n-2)
+end
+
+write fib read

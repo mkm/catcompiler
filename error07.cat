@@ -1,0 +1,6 @@
+// error07.cat
+// pattern doesn't match case expression
+
+case 3 of
+  true => 5
+end

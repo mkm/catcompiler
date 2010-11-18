@@ -1,0 +1,46 @@
+// treesort.cat
+// reads a number n and then n numbers which are sorted and printed
+// uses a tree to sort
+
+type list = (int,list)
+
+type tree = (tree,int,tree)
+
+type ti = (tree,int)
+
+type tl = (tree,list)
+
+type lt = (list,tree)
+
+fun readList : int -> list
+  0 => @ : list
+| n => (read, readList(n-1)):list
+end
+
+fun printList : list -> bool
+  @ => true
+| (n,l) => let t = write n in printList l
+end
+
+fun insert : ti -> tree
+  (@,n) => (@:tree, n, @:tree):tree
+| ((t1,m,t2),n) =>
+     if n<m then (insert(t1,n):ti,m,t2):tree
+     else (t1,m,insert(t2,n):ti):tree
+end
+
+fun flatten : tl -> list
+  (@,l) => l
+| ((t1,n,t2),l) => flatten(t1,(n,flatten(t2,l):tl):list):tl
+end
+
+fun tsort : list -> list
+  l => flatten (insertAll (l,@:tree):lt, @:list):tl
+end
+
+fun insertAll : lt -> tree
+  (@,t) => t
+| ((n,l),t) => insertAll (l,insert(t,n):ti):lt
+end
+
+printList tsort readList read

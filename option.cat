@@ -1,0 +1,16 @@
+// option.cat
+// declares and uses one-element tuple
+
+type option = (int)
+
+fun exists : option -> bool
+  @   => false
+| (x) => true
+end
+
+let a = (read):option
+in
+  if not exists a then write 0
+  else let y = write 1
+       in if exists @:option then write 2
+          else write 3

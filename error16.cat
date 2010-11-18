@@ -1,0 +1,6 @@
+// error16.cat
+// tuple constructor of wrong length
+
+type t = (int,int)
+
+(3,4,5):t

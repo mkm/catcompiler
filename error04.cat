@@ -1,0 +1,4 @@
+// error04.cat
+// logically negates a number
+
+not 3
