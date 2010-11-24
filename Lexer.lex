@@ -25,6 +25,9 @@
        | "fun"          => Parser.FUN pos
        | "read"         => Parser.READ pos
        | "write"        => Parser.WRITE pos
+       | "not"          => Parser.NOT pos
+       | "and"          => Parser.AND pos
+       | "or"           => Parser.OR pos
        | _              => Parser.ID (s, pos)
 
  }
