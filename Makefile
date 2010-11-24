@@ -23,7 +23,7 @@ $(CC) : CC.sml $(OBJS)
 %.sml : %.lex
 	$(SMLLEX) $<
 
-%.sml : %.grm
+%.sig : %.grm
 	$(SMLYAC) -v $<
 
 %.asm : %.cat $(CC)
@@ -32,11 +32,13 @@ $(CC) : CC.sml $(OBJS)
 %.test : %.asm %.in %.out
 	$(ASM) $*.asm <$*.in | diff - $*.out >$@
 
+Parser.sig : Parser.grm
+
 clean:
 	rm -f *.uo *.ui $(CC) *.asm *.test Lexer.sml Parser.sml
 
 Lexer.sml : Lexer.lex
-Parser.sml : Parser.grm
+Parser.sml : Parser.sig
 
 Compiler.uo : Mips.uo RegAlloc.uo Cat.uo Parser.uo Lexer.uo Type.uo
 Type.uo : Mips.uo RegAlloc.uo Cat.uo Parser.uo Lexer.uo
