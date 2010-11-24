@@ -3,6 +3,8 @@
 %token <string*(int*int)> ID
 %token <(int*int)> PLUS MINUS
 %token <(int*int)> NOT AND OR
+%token <(int*int)> EQUAL LESS
+%token <(int*int)> IF THEN ELSE
 %token <(int*int)> FUN LPAR RPAR ARROW
 %token <(int*int)> END MATCHARROW
 %token <(int*int)> INT BOOL BAR COLON
@@ -10,10 +12,11 @@
 
 %right BAR
 %right MATCHARROW
-%left PLUS MINUS
 %right OR
 %right AND
 %right NOT
+%nonassoc EQUAL LESS
+%left PLUS MINUS
 %right WRITE
 
 %start Prog
