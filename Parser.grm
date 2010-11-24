@@ -5,6 +5,7 @@
 %token <(int*int)> NOT AND OR
 %token <(int*int)> EQUAL LESS
 %token <(int*int)> IF THEN ELSE
+%token <(int*int)> IN
 %token <(int*int)> FUN LPAR RPAR ARROW
 %token <(int*int)> END MATCHARROW
 %token <(int*int)> INT BOOL BAR COLON
@@ -37,9 +38,11 @@ Prog :	  FunDecs Exp EOF
 	                { ([],$1,$2) }
 ;
 
-# I don't really get it..
-# IfElseDecs : IF BOOL THEN Exp ELSE Exp
-# IfDecs     : IF BOOL THEN Exp
+/*
+I don't really get it..
+IfElseDecs : IF BOOL THEN Exp ELSE Exp
+IfDecs     : IF BOOL THEN Exp
+*/
 
 FunDecs : FUN ID COLON Type ARROW Type Match END FunDecs
 			{ (#1 $2, $4, $6, $7, $1) :: $9 }
