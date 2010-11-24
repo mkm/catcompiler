@@ -2,6 +2,7 @@
 %token <int*(int*int)> NUM
 %token <string*(int*int)> ID
 %token <(int*int)> PLUS MINUS
+%token <(int*int)> EQUAL LESS
 %token <(int*int)> FUN LPAR RPAR ARROW
 %token <(int*int)> END MATCHARROW
 %token <(int*int)> INT BOOL BAR COLON
@@ -9,6 +10,7 @@
 
 %right BAR
 %right MATCHARROW
+%left EQUAL LESS
 %left PLUS MINUS
 %right WRITE
 
