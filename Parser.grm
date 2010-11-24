@@ -10,7 +10,7 @@
 
 %right BAR
 %right MATCHARROW
-%left EQUAL LESS
+%nonassoc EQUAL LESS
 %left PLUS MINUS
 %right WRITE
 
