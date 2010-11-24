@@ -12,6 +12,8 @@
 
 %right BAR
 %right MATCHARROW
+%left ELSE
+%left IN
 %right OR
 %right AND
 %right NOT
