@@ -49,6 +49,7 @@ rule Token = parse
   | "->"                { Parser.ARROW (getPos lexbuf) }
   | "=>"                { Parser.MATCHARROW (getPos lexbuf) }
   | `|`                 { Parser.BAR (getPos lexbuf) }
+  | `<`                 { Parser.LESS (getPos lexbuf) }
   | eof                 { Parser.EOF (getPos lexbuf) }
   | _                   { lexerError lexbuf "Illegal symbol in input" }
 
