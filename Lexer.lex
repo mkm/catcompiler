@@ -25,10 +25,13 @@
        | "fun"          => Parser.FUN pos
        | "read"         => Parser.READ pos
        | "write"        => Parser.WRITE pos
-			 | "if"						=> Parser.IF pos
-			 | "then"					=> Parser.THEN pos
-			 | "else"					=> Parser.ELSE pos
-			 | "in"						=> Parser.IN pos
+       | "not"          => Parser.NOT pos
+       | "and"          => Parser.AND pos
+       | "or"           => Parser.OR pos
+       | "if"           => Parser.IF pos
+       | "then"         => Parser.THEN pos
+       | "else"         => Parser.ELSE pos
+       | "in"           => Parser.IN pos
        | _              => Parser.ID (s, pos)
 
  }
