@@ -28,10 +28,10 @@
        | "not"          => Parser.NOT pos
        | "and"          => Parser.AND pos
        | "or"           => Parser.OR pos
-       | "if"		=> Parser.IF pos
-       | "then"		=> Parser.THEN pos
-       | "else"		=> Parser.ELSE pos
-       | "in"		=> Parser.IN pos
+       | "if"           => Parser.IF pos
+       | "then"         => Parser.THEN pos
+       | "else"         => Parser.ELSE pos
+       | "in"           => Parser.IN pos
        | _              => Parser.ID (s, pos)
 
  }
