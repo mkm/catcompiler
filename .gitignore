@@ -10,3 +10,4 @@ Parser.output
 .DS_Store
 Mars.jar
 *.swp
+*.sig
