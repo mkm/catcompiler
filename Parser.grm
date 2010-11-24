@@ -31,6 +31,10 @@ Prog :	  FunDecs Exp EOF
 	                { ([],$1,$2) }
 ;
 
+# I don't really get it..
+# IfElseDecs : IF BOOL THEN Exp ELSE Exp
+# IfDecs     : IF BOOL THEN Exp
+
 FunDecs : FUN ID COLON Type ARROW Type Match END FunDecs
 			{ (#1 $2, $4, $6, $7, $1) :: $9 }
 	|		{ [] }
