@@ -38,12 +38,6 @@ Prog :	  FunDecs Exp EOF
 	                { ([],$1,$2) }
 ;
 
-/*
-I don't really get it..
-IfElseDecs : IF BOOL THEN Exp ELSE Exp
-IfDecs     : IF BOOL THEN Exp
-*/
-
 FunDecs : FUN ID COLON Type ARROW Type Match END FunDecs
 			{ (#1 $2, $4, $6, $7, $1) :: $9 }
 	|		{ [] }
@@ -71,4 +65,5 @@ Exp :	  NUM		{ Cat.Num $1 }
 	| READ		{ Cat.Read $1 }
 	| WRITE Exp	{ Cat.Write ($2, $1) }
 	| LPAR Exp RPAR	{ $2 }
+	| IF Exp THEN Exp ELSE Exp { Cat.If ($2, $4, $6, $1) }
 ;
