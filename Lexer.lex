@@ -33,6 +33,8 @@
        | "else"         => Parser.ELSE pos
        | "let"          => Parser.LET pos
        | "in"           => Parser.IN pos
+	   | "case"			=> Parser.CASE pos
+	   | "of"			=> Parser.OF pos
        | _              => Parser.ID (s, pos)
 
  }
