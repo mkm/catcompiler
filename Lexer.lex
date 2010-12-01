@@ -31,6 +31,7 @@
        | "if"           => Parser.IF pos
        | "then"         => Parser.THEN pos
        | "else"         => Parser.ELSE pos
+       | "let"          => Parser.LET pos
        | "in"           => Parser.IN pos
        | _              => Parser.ID (s, pos)
 
