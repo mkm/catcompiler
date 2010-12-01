@@ -63,6 +63,7 @@ Exp :	  NUM		{ Cat.Num $1 }
 	| ID		{ Cat.Var $1 }
 	| Exp PLUS Exp	{ Cat.Plus ($1, $3, $2) }
 	| Exp MINUS Exp	{ Cat.Minus ($1, $3, $2) }
+  | NOT Exp { Cat.Not ($2, $1) }
   | Exp AND Exp { Cat.And ($1, $3, $2) }
   | Exp OR Exp { Cat.Or ($1, $3, $2) }
 	| ID Exp %prec WRITE
