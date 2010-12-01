@@ -17,13 +17,14 @@ type t__15__ = (int*int)
 type t__16__ = (int*int)
 type t__17__ = (int*int)
 type t__18__ = (int*int)
-type t__19__ = int*(int*int)
-type t__20__ = (int*int)
+type t__19__ = (int*int)
+type t__20__ = int*(int*int)
 type t__21__ = (int*int)
 type t__22__ = (int*int)
 type t__23__ = (int*int)
 type t__24__ = (int*int)
 type t__25__ = (int*int)
+type t__26__ = (int*int)
 in
 datatype token =
     AND of t__1__
@@ -38,19 +39,20 @@ datatype token =
   | FUN of t__10__
   | ID of t__11__
   | IF of t__12__
-  | INT of t__13__
-  | LESS of t__14__
-  | LPAR of t__15__
-  | MATCHARROW of t__16__
-  | MINUS of t__17__
-  | NOT of t__18__
-  | NUM of t__19__
-  | OR of t__20__
-  | PLUS of t__21__
-  | READ of t__22__
-  | RPAR of t__23__
-  | THEN of t__24__
-  | WRITE of t__25__
+  | IN of t__13__
+  | INT of t__14__
+  | LESS of t__15__
+  | LPAR of t__16__
+  | MATCHARROW of t__17__
+  | MINUS of t__18__
+  | NOT of t__19__
+  | NUM of t__20__
+  | OR of t__21__
+  | PLUS of t__22__
+  | READ of t__23__
+  | RPAR of t__24__
+  | THEN of t__25__
+  | WRITE of t__26__
 end;
 
 val Prog :
