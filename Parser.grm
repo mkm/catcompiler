@@ -55,6 +55,7 @@ Pat :	  NUM		{ Cat.NumP $1 }
 
 Pats :    Pat		{ [$1] }
      	| Pats COMMA Pats { $1 @ $2 }
+;
 
 Match :	  Pat MATCHARROW Exp
 			{ [($1,$3)] }
