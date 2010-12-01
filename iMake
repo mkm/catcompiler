@@ -1,3 +1,0 @@
-#!/bin/bash
-dir="/opt/local/bin"
-make SMLC=$dir/mosmlc SMLLEX=$dir/mosmllex SMLYAC=$dir/mosmlyac
