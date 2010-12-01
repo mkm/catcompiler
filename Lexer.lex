@@ -33,6 +33,8 @@
        | "else"         => Parser.ELSE pos
        | "let"          => Parser.LET pos
        | "in"           => Parser.IN pos
+	   | "case"			=> Parser.CASE pos
+	   | "of"			=> Parser.OF pos
        | _              => Parser.ID (s, pos)
 
  }
@@ -54,6 +56,9 @@ rule Token = parse
   | `(`                 { Parser.LPAR (getPos lexbuf) }
   | `)`                 { Parser.RPAR (getPos lexbuf) }
   | `:`                 { Parser.COLON (getPos lexbuf) }
+  | `@`                 { Parser.AT (getPos lexbuf) }
+  | `;`                 { Parser.SEMICOLON (getPos lexbuf) }
+  | `,`                 { Parser.COMMA (getPos lexbuf) }
   | "->"                { Parser.ARROW (getPos lexbuf) }
   | "=>"                { Parser.MATCHARROW (getPos lexbuf) }
   | `|`                 { Parser.BAR (getPos lexbuf) }
