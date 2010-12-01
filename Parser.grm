@@ -6,11 +6,12 @@
 %token <(int*int)> EQUAL LESS
 %token <(int*int)> IF THEN ELSE
 %token <(int*int)> AT
-%token <(int*int)> LET IN
+%token <(int*int)> LET IN CASE OF
 %token <(int*int)> FUN LPAR RPAR ARROW
 %token <(int*int)> END MATCHARROW
 %token <(int*int)> INT BOOL BAR COLON
 %token <(int*int)> READ WRITE EOF
+%token <(int*int)> COMMA SEMICOLON
 
 %right BAR
 %right MATCHARROW
