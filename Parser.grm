@@ -5,6 +5,7 @@
 %token <(int*int)> NOT AND OR
 %token <(int*int)> EQUAL LESS
 %token <(int*int)> IF THEN ELSE
+%token <(int*int)> AT
 %token <(int*int)> LET IN
 %token <(int*int)> FUN LPAR RPAR ARROW
 %token <(int*int)> END MATCHARROW
