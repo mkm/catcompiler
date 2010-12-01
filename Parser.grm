@@ -79,6 +79,7 @@ Exp :	  NUM		{ Cat.Num $1 }
 
 Exps :	  Exp		{ [$1] }
      	| Exps COMMA Exps { $1 @ $2 }
+;
 
 Dec : Pat EQUAL Exp { [($1, $3, $2)] }
     | Dec SEMICOLON Dec { $1 @ $3 }
