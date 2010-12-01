@@ -67,8 +67,9 @@ Exp :	  NUM		{ Cat.Num $1 }
 	| WRITE Exp	{ Cat.Write ($2, $1) }
 	| LPAR Exp RPAR	{ $2 }
 	| IF Exp THEN Exp ELSE Exp { Cat.If ($2, $4, $6, $1) }
-	| LET Dec IN Exp { Cat.Dec ($2, $4, $1) }
+	| LET Dec IN Exp { Cat.Let ($2, $4, $1) }
 ;
 
 Dec : Pat EQUAL Exp { [($1, $3, $2)] }
     | Dec SEMICOLON Dec { $1 @ $3 }
+;
