@@ -20,7 +20,7 @@ struct
         case lookup x table2 of
           SOME _ => raise Error ("Repeated identifier "^x,p)
         | NONE => (x,v) :: combineTables table1 table2 p
-
+                  
   fun checkDups table =
       let
           fun go [] = ()
@@ -141,8 +141,8 @@ struct
 	(*| Case(e, m, pos)*)
 	(*| Cat.Null (name, pos) =>*)
 	
-    | _ => raise Fail ("checkExp")
-
+  | _ => raise Fail ("checkExp")
+                 
   and checkMatch [(p,e)] tce vtable ftable ttable pos =
         let
           val vtable1 = checkPat p tce ttable pos
