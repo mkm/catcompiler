@@ -122,7 +122,7 @@ struct
 			else raise Error ("Or has to be called with two booleans",pos)
 	   end
 	(*| Cat.Let(d, e, pos) =>*)
-	| Cat.MkTuple (es, t, pos) =>
+	(*| Cat.MkTuple (es, t, pos) =>
 		let
 			fun x(e::es, t::ts, pos) = let
 									val et = checkExp e vtable ftable ttable
@@ -137,7 +137,7 @@ struct
 			(case lookup t ttable of
 			  SOME ty => let val _ = x(es, ty, pos) in TyVar t end
 		          | _ => raise Error ("Unknown type",pos))
-		end
+		end*)
 	(*| Case(e, m, pos)*)
 	(*| Cat.Null (name, pos) =>*)
 	
