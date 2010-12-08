@@ -78,7 +78,7 @@ Exp :	  NUM		{ Cat.Num $1 }
 ;
 
 Exps :	  Exp		{ [$1] }
-     	| Exps COMMA Exps { $1 @ $2 }
+     	| Exps COMMA Exps { $1 @ $3 }
 ;
 
 Dec : Pat EQUAL Exp { [($1, $3, $2)] }
