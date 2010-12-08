@@ -21,16 +21,32 @@ struct
           SOME _ => raise Error ("Repeated identifier "^x,p)
         | NONE => (x,v) :: combineTables table1 table2 p
 
+  fun checkDups table =
+      let
+          fun go [] = ()
+            | go ((nameA, _)::xs) = (
+              map (fn (nameB, _) => if nameA = nameB then raise Error ("name collision", (0, 0)) else ()) xs; go xs
+              )
+      in
+          table
+      end
+
   (* check that type expression is valid and return its type *)
   fun checkType te ttable =
     case te of
       Cat.Int _ => Int
+    | Cat.Bool _ => Bool
+    | Cat.TyVar (s,_) => TyVar s 
 
   (* Check pattern and return vtable *)
   fun checkPat pat ty ttable pos =
     case (pat,ty) of
       (Cat.NumP _, Int) => []
     | (Cat.VarP (x,p), ty) => [(x,ty)]
+    | (Cat.TrueP pos, ty) => []
+    | (Cat.FalseP pos, ty) => []
+    | (Cat.NullP pos, ty) => []
+    | (Cat.TupleP (pats, pos), ty) => checkDups (List.concat (map (fn pat => checkPat pat ty ttable pos) pats))
     | _ => raise Error ("Pattern doesn't match type", pos)
 
   (* check expression and return type *)
@@ -63,6 +79,7 @@ struct
        (case checkExp e1 vtable ftable ttable of
           Int => Int
         | _ => raise Error ("Non-int argument to write",pos))
+
 	| Cat.True pos => Bool
 	| Cat.False pos => Bool
 	| Cat.Equal (e1, e2, pos) =>
@@ -124,6 +141,8 @@ struct
 	(*| Case(e, m, pos)*)
 	(*| Cat.Null (name, pos) =>*)
 	
+    | _ => raise Fail ("checkExp")
+
   and checkMatch [(p,e)] tce vtable ftable ttable pos =
         let
           val vtable1 = checkPat p tce ttable pos
@@ -163,7 +182,7 @@ struct
 
   fun checkProgram (tyDecs, funDecs, e) =
     let
-      val ttable = []
+      val ttable = map (fn (s, ts, _) => (s, ts)) tyDecs
       val ftable = getFunDecs funDecs ttable []
       val _ = List.map (checkFunDec ftable ttable) funDecs
     in
