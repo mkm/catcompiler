@@ -3,7 +3,7 @@ SMLLEX=/opt/mosml/bin/mosmllex
 SMLYAC=/opt/mosml/bin/mosmlyac
 ASM=java -jar Mars.jar
 
-TESTS=fib.test
+TESTS=fib.test pair.test
 OBJS=Cat.uo Compiler.uo Lexer.uo Mips.uo Parser.uo RegAlloc.uo Type.uo
 CC=./CC
 
@@ -35,7 +35,7 @@ $(CC) : CC.sml $(OBJS)
 Parser.sig : Parser.grm
 
 clean:
-	rm -f *.uo *.ui $(CC) *.asm *.test Lexer.sml Parser.sml
+	rm -f *.uo *.ui $(CC) *.asm *.test Lexer.sml Parser.sml Parser.sig
 
 Lexer.sml : Lexer.lex
 Parser.sml : Parser.sig

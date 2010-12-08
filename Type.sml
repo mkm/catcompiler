@@ -79,6 +79,7 @@ struct
        (case checkExp e1 vtable ftable ttable of
           Int => Int
         | _ => raise Error ("Non-int argument to write",pos))
+    | _ => raise Fail ("checkExp")
 
   and checkMatch [(p,e)] tce vtable ftable ttable pos =
         let

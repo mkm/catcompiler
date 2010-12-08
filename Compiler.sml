@@ -58,6 +58,7 @@ struct
         in
           ([Mips.MOVE (xt,v)], (x,xt)::vtable)
         end
+    | _ => raise Fail ("compilePat")
 
   (* compile expression *)
   fun compileExp e vtable place =
@@ -107,6 +108,7 @@ struct
 	   Mips.LA ("4","_cr_"),
 	   Mips.LI ("2","4"),  (* write_string syscall *)
 	   Mips.SYSCALL]
+    | _ => raise Fail ("compileExp")
 
   and compileMatch [] arg res endLabel failLabel vtable =
         [Mips.J failLabel]
