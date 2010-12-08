@@ -95,6 +95,7 @@ Exp :	  NUM		{ Cat.Num $1 }
 	| LPAR Exps RPAR COLON ID { Cat.MkTuple($2, #1 $5, $1) }
     | CASE Exp OF Match END { Cat.Case ($2, $4, $1) }
 	| NULL COLON ID { Cat.Null(#1 $3, $1) }
+	| ID Exp { Cat.Apply(#1 $1, $2, #2 $1) }
 ;
 
 Exps :	  Exp		{ [$1] }
