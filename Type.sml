@@ -21,6 +21,16 @@ struct
           SOME _ => raise Error ("Repeated identifier "^x,p)
         | NONE => (x,v) :: combineTables table1 table2 p
 
+  fun checkDups table =
+      let
+          fun go [] = ()
+            | go ((nameA, _)::xs) = (
+              map (fn (nameB, _) => if nameA = nameB then raise Error ("name collision", (0, 0)) else ()) xs; go xs
+              )
+      in
+          table
+      end
+
   (* check that type expression is valid and return its type *)
   fun checkType te ttable =
     case te of
@@ -36,7 +46,7 @@ struct
     | (Cat.TrueP pos, ty) => []
     | (Cat.FalseP pos, ty) => []
     | (Cat.NullP pos, ty) => []
-    | (Cat.TupleP (pats, pos), ty) => List.concat (map (fn pat => checkPat pat ty ttable pos) pats)
+    | (Cat.TupleP (pats, pos), ty) => checkDups (List.concat (map (fn pat => checkPat pat ty ttable pos) pats))
     | _ => raise Error ("Pattern doesn't match type", pos)
 
   (* check expression and return type *)
