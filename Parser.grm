@@ -27,6 +27,8 @@
 %start Prog
 %type <Cat.Prog> Prog
 %type <Cat.Type> Type
+%type <Cat.Type list> Types
+%type <Cat.TyDec list> TyDecs
 %type <Cat.Exp> Exp
 %type <Cat.Exp list> Exps
 %type <Cat.Match> Match
@@ -47,6 +49,10 @@ FunDecs : FUN ID COLON Type ARROW Type Match END FunDecs
 ;
 
 Type :	  INT		{ Cat.Int $1 }
+;
+
+Types : Type { [$1] }
+      | Types COMMA Types { $1 @ $3 }
 ;
 
 Pat :	  NUM		{ Cat.NumP $1 }
@@ -83,4 +89,8 @@ Exps :	  Exp		{ [$1] }
 
 Dec : Pat EQUAL Exp { [($1, $3, $2)] }
     | Dec SEMICOLON Dec { $1 @ $3 }
+;
+
+TyDecs : Type ID EQUAL LPAR Types RPAR TyDecs { (#1 $2, $5, #2 $2) :: $7 }
+       | { [] }
 ;
