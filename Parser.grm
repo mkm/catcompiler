@@ -49,6 +49,7 @@ FunDecs : FUN ID COLON Type ARROW Type Match END FunDecs
 ;
 
 Type :	  INT		{ Cat.Int $1 }
+     |	  BOOL		{ Cat.Bool $1 }
 ;
 
 Types : Type { [$1] }
