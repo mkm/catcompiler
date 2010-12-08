@@ -63,7 +63,67 @@ struct
        (case checkExp e1 vtable ftable ttable of
           Int => Int
         | _ => raise Error ("Non-int argument to write",pos))
-
+	| Cat.True pos => Bool
+	| Cat.False pos => Bool
+	| Cat.Equal (e1, e2, pos) =>
+    	(case (checkExp e1 vtable ftable ttable,
+	           checkExp e2 vtable ftable ttable) of
+	       (Int,Int) => Bool
+		   |(Bool,Bool) => Bool
+		   |	(TyVar s1, TyVar s2) => 
+					if s1 = s2 
+					then Bool 
+					else raise Error("Comparison of differing types ",pos)
+		 | _ => raise Error("Comparison of differing types ",pos))
+	| Cat.Less (e1, e2, pos) =>
+    	(case (checkExp e1 vtable ftable ttable,
+	           checkExp e2 vtable ftable ttable) of
+	       (Int,Int) => Bool
+	     | _ => raise Error ("Non-int argument to <",pos))
+	| Cat.Not (e1, pos) =>
+		(case (checkExp e1 vtable ftable ttable) of
+	       Bool => Bool
+	     | _ => raise Error ("Not has to be called with a boolean",pos))
+    | Cat.And (e1,e2,pos) =>
+       (case (checkExp e1 vtable ftable ttable,
+            checkExp e2 vtable ftable ttable) of
+        (Bool,Bool) => Bool
+      | _ => raise Error ("And has to be called with two booleans",pos))
+    | Cat.Or (e1,e2,pos) =>
+       (case (checkExp e1 vtable ftable ttable,
+            checkExp e2 vtable ftable ttable) of
+        (Bool,Bool) => Bool
+        | _ => raise Error ("Or has to be called with two booleans",pos))
+    | Cat.If (ec, e1, e2, pos) =>
+       let val (ct, t1, t2) = (
+			checkExp ec vtable ftable ttable,
+			checkExp e1 vtable ftable ttable, 
+			checkExp e2 vtable ftable ttable)
+	   in
+			if t1 = t2 andalso ct = Bool
+			then t1
+			else raise Error ("Or has to be called with two booleans",pos)
+	   end
+	(*| Cat.Let(d, e, pos) =>*)
+	| Cat.MkTuple (es, t, pos) =>
+		let
+			fun x(e::es, t::ts, pos) = let
+									val et = checkExp e vtable ftable ttable
+								in
+									if et = t
+								  	then x(es, ts, pos)
+								  	else raise Error ("Tuple of wrong type",pos)
+								end
+			  | x([], [], pos) = ()
+			  | x(_, _, pos) = raise Error ("Tuple of wrong type",pos)
+		in
+			(case lookup t ttable of
+			  SOME ty => let val _ = x(es, ty, pos) in TyVar t end
+		          | _ => raise Error ("Unknown type",pos))
+		end
+	(*| Case(e, m, pos)*)
+	(*| Cat.Null (name, pos) =>*)
+	
   and checkMatch [(p,e)] tce vtable ftable ttable pos =
         let
           val vtable1 = checkPat p tce ttable pos
