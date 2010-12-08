@@ -34,6 +34,7 @@ struct
     | (Cat.TrueP pos, ty) => []
     | (Cat.FalseP pos, ty) => []
     | (Cat.NullP pos, ty) => []
+    | (Cat.TupleP (pats, pos), ty) => List.concat (map (fn pat => checkPat pat ty ttable pos) pats)
     | _ => raise Error ("Pattern doesn't match type", pos)
 
   (* check expression and return type *)
