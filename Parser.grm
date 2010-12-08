@@ -5,7 +5,7 @@
 %token <(int*int)> NOT AND OR
 %token <(int*int)> EQUAL LESS
 %token <(int*int)> IF THEN ELSE
-%token <(int*int)> AT
+%token <(int*int)> AT NULL
 %token <(int*int)> LET IN CASE OF
 %token <(int*int)> FUN LPAR RPAR ARROW
 %token <(int*int)> END MATCHARROW
@@ -92,6 +92,7 @@ Exp :	  NUM		{ Cat.Num $1 }
 	| LET Dec IN Exp { Cat.Let ($2, $4, $1) }
 	| LPAR Exps RPAR COLON ID { Cat.MkTuple($2, #1 $5, $1) }
     | CASE Exp OF Match END { Cat.Case ($2, $4, $1) }
+	| NULL COLON ID { Cat.Null(#1 $3, $1) }
 ;
 
 Exps :	  Exp		{ [$1] }
