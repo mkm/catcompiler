@@ -31,6 +31,9 @@ struct
     case (pat,ty) of
       (Cat.NumP _, Int) => []
     | (Cat.VarP (x,p), ty) => [(x,ty)]
+    | (Cat.TrueP pos, ty) => []
+    | (Cat.FalseP pos, ty) => []
+    | (Cat.NullP pos, ty) => []
     | _ => raise Error ("Pattern doesn't match type", pos)
 
   (* check expression and return type *)
