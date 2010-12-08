@@ -39,8 +39,8 @@
 
 %%
 
-Prog :	  FunDecs Exp EOF
-	                { ([],$1,$2) }
+Prog :	  TyDecs FunDecs Exp EOF
+	                { ($1,$2,$3) }
 ;
 
 FunDecs : FUN ID COLON Type ARROW Type Match END FunDecs
@@ -60,7 +60,7 @@ Pat :	  NUM		{ Cat.NumP $1 }
 ;
 
 Pats :    Pat		{ [$1] }
-     	| Pats COMMA Pats { $1 @ $2 }
+     	| Pats COMMA Pats { $1 @ $3 }
 ;
 
 Match :	  Pat MATCHARROW Exp
