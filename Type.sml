@@ -25,6 +25,8 @@ struct
   fun checkType te ttable =
     case te of
       Cat.Int _ => Int
+    | Cat.Bool _ => Bool
+    | Cat.TyVar (s,_) => TyVar s 
 
   (* Check pattern and return vtable *)
   fun checkPat pat ty ttable pos =
