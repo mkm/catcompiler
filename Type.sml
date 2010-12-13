@@ -173,7 +173,7 @@ fun checkExp exp vtable ftable (ttable : TTable) =
 					          val expt = checkExp mexp vtable ftable ttable
 				        in
 					          if lastexp <> expt
-					          then raise Error("Pattern mismatch", pos)
+					          then raise Error("Pattern mismatch got "^typeName lastexp^" expected "^typeName expt, pos)
 					          else (checkPat mpat t ttable pos; expt)
 				        end
 			        | patCheck(t, [], _, _, _, _) = t
