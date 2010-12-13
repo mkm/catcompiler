@@ -4,7 +4,7 @@ SMLYAC=/opt/mosml/bin/mosmlyac
 ASM=java -jar Mars.jar
 
 RUNTESTS=fib.test
-COMPTESTS=pair.type.asm ackermann.type.asm logic.type.asm option.type.asm qsort.type.asm reverse.type.asm rwlist.type.asm treesort.type.asm tuple.type.asm equal.type.asm
+COMPTESTS=pair.type.asm logic.type.asm option.type.asm qsort.type.asm reverse.type.asm rwlist.type.asm treesort.type.asm tuple.type.asm equal.type.asm
 OBJS=Cat.uo Compiler.uo Lexer.uo Mips.uo Parser.uo RegAlloc.uo Type.uo
 CC=./CC
 
