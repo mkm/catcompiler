@@ -48,5 +48,5 @@ fun compile filename flags =
 
 val _ = case Mosml.argv () of
             (_::file::flags) => compile file flags
-          | [] => errorMess "No arguments"
+          | _ => errorMess "No arguments"
 end
