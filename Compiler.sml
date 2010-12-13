@@ -61,6 +61,19 @@ struct
     | _ => raise Fail ("compilePat")
 
   (* compile expression *)
+  (* True of pos
+   | False of pos
+   | Null of string * pos
+   | Equal of Exp * Exp * pos
+   | Less of Exp * Exp * pos
+   | Not of Exp * pos
+   | And of Exp * Exp * pos
+   | Or of Exp * Exp * pos
+   | Let of Dec * Exp * pos
+   | If of Exp * Exp * Exp * pos
+   | MkTuple of Exp list * string * pos
+   | Case of Exp * Match * pos
+   *)
   fun compileExp e vtable place =
     case e of
       Cat.Num (n,pos) =>
@@ -88,6 +101,26 @@ struct
 	in
 	  code1 @ code2 @ [Mips.SUB (place,t1,t2)]
 	end
+    | Cat.Equal (e1,e2,pos) =>
+		let
+			val t1 = "_equal1_"^newName()
+			val t2 = "_equal2_"^newName()
+			val code1 = compileExp Cat.Minus(e1,e2) vtable t1
+			val code2 = compileExp Cat.Num(-1) vtable t2
+		in
+			code1 @ code2 @ [Mips.XOR (place,t1,t2)]
+		end
+
+    | Cat.Less (e1,e2,pos) =>
+        let
+	  val t1 = "_less1_"^newName()
+	  val t2 = "_less2_"^newName()
+          val code1 = compileExp e1 vtable t1
+          val code2 = compileExp e2 vtable t2
+	in
+	  code1 @ code2 @ [Mips.SLT (place,t1,t2)]
+	end
+
     | Cat.Apply (f,e,pos) =>
 	let
 	  val t1 = "_apply_"^newName()
