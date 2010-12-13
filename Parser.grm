@@ -16,6 +16,7 @@
 
 %right BAR
 %right MATCHARROW
+%right COMMA
 %left ELSE
 %left IN LET
 %right OR

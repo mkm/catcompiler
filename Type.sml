@@ -134,7 +134,7 @@ struct
 	   in
 			if t1 = t2 andalso ct = Bool
 			then t1
-			else raise Error ("Or has to be called with two booleans",pos)
+			else raise Error ("If has to be called with a boolean",pos)
 	   end
 	| Cat.Let(d, e, _) =>
     let

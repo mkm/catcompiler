@@ -64,13 +64,11 @@ struct
   (* True of pos
    | False of pos
    | Null of string * pos
-   | Equal of Exp * Exp * pos
    | Less of Exp * Exp * pos
    | Not of Exp * pos
    | And of Exp * Exp * pos
    | Or of Exp * Exp * pos
    | Let of Dec * Exp * pos
-   | If of Exp * Exp * Exp * pos
    | MkTuple of Exp list * string * pos
    | Case of Exp * Match * pos
    *)
@@ -101,6 +99,13 @@ struct
 	in
 	  code1 @ code2 @ [Mips.SUB (place,t1,t2)]
 	end
+	| Cat.True (pos) => 
+		let
+			val t = "_true_"^newName()
+			val c = compileExp (Cat.Num(~1, pos)) vtable t
+		in
+			c
+		end
     | Cat.Equal (e1,e2,pos) =>
 		let
 			val t1 = "_equal1_"^newName()
@@ -110,7 +115,22 @@ struct
 		in
 			code1 @ code2 @ [Mips.XOR (place,t1,t2)]
 		end
-
+    | Cat.If (e1,e2,e3,pos) =>
+		let
+			val if_ = "if__"^newName()
+			val then_ = "then__"^newName()
+			val else_ = "else__"^newName()
+			val end_ = "end__"^newName()
+			val if_code   = compileExp e1 vtable if_
+			val then_code = compileExp e2 vtable then_
+			val else_code = compileExp e3 vtable else_
+		in
+			if_code @ [Mips.BNE (if_, "0", then_)] 
+				@ [Mips.LABEL(else_)] @ else_code
+				@ [Mips.J(end_)]
+				@ [Mips.LABEL(then_)] @ then_code
+				@ [Mips.LABEL(end_)]
+		end
     | Cat.Less (e1,e2,pos) =>
         let
 	  val t1 = "_less1_"^newName()
