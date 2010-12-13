@@ -6,7 +6,9 @@ struct
 
   type pos = int*int
 
-  datatype Type = Int | Bool | TyVar of string
+  datatype CType = Int | Bool | TyVar of string
+
+  type TTable = (string * CType list) list
 
   (* lookup function for symbol table as list of (name,value) pairs *)
   fun lookup x []
@@ -38,19 +40,32 @@ struct
     | Cat.Bool _ => Bool
     | Cat.TyVar (s,_) => TyVar s 
 
+  fun convertType (Cat.Int _) = Int
+    | convertType (Cat.Bool _) = Bool
+    | convertType (Cat.TyVar (s, _)) = TyVar s
+
   (* Check pattern and return vtable *)
-  fun checkPat pat ty ttable pos =
+  fun checkPat pat ty (ttable : TTable) pos =
     case (pat,ty) of
       (Cat.NumP _, Int) => []
     | (Cat.VarP (x,p), ty) => [(x,ty)]
     | (Cat.TrueP pos, Bool) => []
     | (Cat.FalseP pos, Bool) => []
     | (Cat.NullP pos, TyVar _) => []
-    | (Cat.TupleP (pats, pos), ty) => checkDups (List.concat (map (fn pat => checkPat pat ty ttable pos) pats))
+    | (Cat.TupleP (pats, pos), TyVar name) => (
+      case lookup name ttable of
+          SOME tys => checkPats pats tys ttable pos
+        | NONE => raise Error ("wtf", pos)
+      )
     | _ => raise Error ("Pattern doesn't match type", pos)
 
+  and checkPats [] [] ttable pos = []
+    | checkPats (pat::pats) (ty::tys) ttable pos = combineTables (checkPat pat ty ttable pos) (checkPats pats tys ttable pos) pos
+    | checkPats _ _ _ pos = raise Error ("your mother is an error", pos)
+                                  
+
   (* check expression and return type *)
-  fun checkExp exp vtable ftable ttable =
+  fun checkExp exp vtable ftable (ttable : TTable) =
     case exp of
       Cat.Num (n,pos) => Int
     | Cat.Var (x,pos) =>
@@ -129,11 +144,11 @@ struct
     end
 	| Cat.MkTuple (exps, typname, pos) =>
 		let
-			fun x(exp::exps, typ::typs, pos, vtable, ftable, ttable) = 
+			fun x(exp::exps, (typ::typs) : CType list, pos, vtable, ftable, ttable) = 
 				let
-					val exptyp = checkExp exp vtable ftable ttable
+					val exptyp : CType = checkExp exp vtable ftable ttable
 				in
-					if exptyp = checkType typ ttable
+					if exptyp = typ
 				  	then x(exps, typs, pos, vtable, ftable, ttable)
 				  	else raise Error ("Tuple of wrong type",pos)
 				end
@@ -141,13 +156,13 @@ struct
 			  | x(_,   _, pos, _, _, _) = raise Error ("Tuple of wrong type",pos)
 		in
 			(case lookup typname ttable of
-			  SOME typs => (x(exps, typs, pos, vtable, ftable, ttable); TyVar (typname))
+			  SOME (typs : CType list) => (x(exps, typs, pos, vtable, ftable, ttable); TyVar (typname))
 		    |       _ => raise Error ("Unknown type "^typname,pos))
 		end
 	| Cat.Case(e, m, pos) => 
 		let
 			val t = checkExp e vtable ftable ttable
-			fun patCheck (t, (mpat, mexp)::ms, vtable, ftable, ttable, pos) = 
+			fun patCheck (t, (mpat, mexp)::ms, vtable, ftable, ttable : TTable, pos) = 
 				let
 					val lastexp = patCheck(t,ms,vtable,ftable,ttable, pos)
 					val expt = checkExp mexp vtable ftable ttable
@@ -210,7 +225,7 @@ struct
 
   fun checkProgram (tyDecs, funDecs, e) =
     let
-      val ttable = checkDups (map (fn (s, ts, _) => (s, ts)) tyDecs)
+      val ttable = checkDups (map (fn (s, ts, _) => (s, map convertType ts)) tyDecs)
       val ftable = getFunDecs funDecs ttable []
       val _ = List.map (checkFunDec ftable ttable) funDecs
     in
