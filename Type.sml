@@ -20,7 +20,7 @@ struct
         case lookup x table2 of
           SOME _ => raise Error ("Repeated identifier "^x,p)
         | NONE => (x,v) :: combineTables table1 table2 p
-                  
+
   fun checkDups table =
       let
           fun go [] = ()
@@ -121,7 +121,12 @@ struct
 			then t1
 			else raise Error ("Or has to be called with two booleans",pos)
 	   end
-	(*| Cat.Let(d, e, pos) =>*)
+	| Cat.Let(d, e, _) =>
+    let
+        val vtable' = checkDec d vtable ftable ttable
+    in
+        checkExp e vtable' ftable ttable
+    end
 	| Cat.MkTuple (exps, typname, pos) =>
 		let
 			fun x(exp::exps, typ::typs, pos, vtable, ftable, ttable) = 
@@ -143,6 +148,15 @@ struct
 	(*| Cat.Null (name, pos) =>*)
 	
   | _ => raise Fail ("checkExp")
+
+  and checkDec [] vtable ftable ttable = vtable
+    | checkDec ((pat, exp, pos)::xs) vtable ftable ttable =
+      let
+          val expT = checkExp exp vtable ftable ttable
+          val vtable' = checkPat pat expT ttable pos
+      in
+          checkDec xs (combineTables vtable' vtable pos) ftable ttable
+      end
                  
   and checkMatch [(p,e)] tce vtable ftable ttable pos =
         let
