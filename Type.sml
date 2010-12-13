@@ -170,8 +170,6 @@ struct
 			patCheck( t, m, vtable, ftable, ttable, pos)
 		end
 	| Cat.Null (name, pos) => TyVar name
-	
-  | _ => raise Fail ("checkExp")
 
   and checkDec [] vtable ftable ttable = vtable
     | checkDec ((pat, exp, pos)::xs) vtable ftable ttable =
