@@ -45,6 +45,10 @@ fun convertType (Cat.Int _) = Int
   | convertType (Cat.Bool _) = Bool
   | convertType (Cat.TyVar (s, _)) = TyVar s
 
+fun typeName Int = "Int"
+  | typeName Bool = "Bool"
+  | typeName (TyVar s) = "TyVar "^s
+
 (* Check pattern and return vtable *)
 fun checkPat pat ty (ttable : TTable) pos =
     case (pat,ty) of
@@ -151,7 +155,7 @@ fun checkExp exp vtable ftable (ttable : TTable) =
 				        in
 					          if exptyp = typ
 				  	        then x(exps, typs, pos, vtable, ftable, ttable)
-				  	        else raise Error ("Tuple of wrong type",pos)
+				  	        else raise Error ("Tuple of wrong type, expected "^ typeName exptyp ^" got " ^ typeName typ,pos)
 				        end
 			        | x([], [], pos, _, _, _) = ()
 			        | x(_,   _, pos, _, _, _) = raise Error ("Tuple of wrong type",pos)

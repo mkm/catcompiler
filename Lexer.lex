@@ -37,6 +37,8 @@
 	   | "of"			=> Parser.OF pos
 	   | "true"			=> Parser.TRUE pos
 	   | "false"		=> Parser.FALSE pos
+	   | "int"			=> Parser.INT pos
+	   | "bool"			=> Parser.BOOL pos
        | _              => Parser.ID (s, pos)
 
  }
