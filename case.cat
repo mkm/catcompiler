@@ -1,0 +1,4 @@
+type bb = (bool,bool)
+case (1=0,1=0) : bb of
+  x => 5
+end
