@@ -155,7 +155,7 @@ struct
 		in
 			patCheck( t, m, vtable, ftable, ttable, pos)
 		end
-	(*| Cat.Null (name, pos) =>*)
+	| Cat.Null (name, pos) => TyVar name
 	
   | _ => raise Fail ("checkExp")
                  
