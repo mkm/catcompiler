@@ -82,6 +82,8 @@ Match :	  Pat MATCHARROW Exp
 
 Exp :	  NUM		{ Cat.Num $1 }
 	| ID		{ Cat.Var $1 }
+  | TRUE { Cat.True $1 }
+  | FALSE { Cat.False $1 }
 	| Exp PLUS Exp	{ Cat.Plus ($1, $3, $2) }
 	| Exp MINUS Exp	{ Cat.Minus ($1, $3, $2) }
 	| Exp EQUAL Exp	{ Cat.Equal ($1, $3, $2) }
@@ -113,7 +115,7 @@ Tuple : ParenExp COLON ID { Cat.MkTuple ([$1], #1 $3, $2) }
      | LPAR TupleBody RPAR COLON ID { Cat.MkTuple ($2, #1 $5, $1) }
 ;
 
-TupleBody : Exp COMMA Exp { [$1] }
+TupleBody : Exp COMMA Exp { [$1, $3] }
      | Exp COMMA TupleBody { $1 :: $3 }
 ;
 
