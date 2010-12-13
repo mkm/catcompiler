@@ -46,8 +46,17 @@ struct
     | (Cat.TrueP pos, Bool) => []
     | (Cat.FalseP pos, Bool) => []
     | (Cat.NullP pos, TyVar _) => []
-    | (Cat.TupleP (pats, pos), ty) => checkDups (List.concat (map (fn pat => checkPat pat ty ttable pos) pats))
+    | (Cat.TupleP (pats, pos), TyVar name) => (
+      case lookup name ttable of
+          SOME (_, tys) => checkPats pats tys ttable pos
+        | NONE => raise Error ("wtf", pos)
+      )
     | _ => raise Error ("Pattern doesn't match type", pos)
+
+  and checkPats [] [] ttable pos = []
+    | checkPats (pat::pats) (ty::tys) ttable pos = combineTables (checkPat pat ty ttable pos) (checkPats pats tys ttable pos) pos
+    | checkPats _ _ _ pos = raise Error ("your mother is an error", pos)
+                                  
 
   (* check expression and return type *)
   fun checkExp exp vtable ftable ttable =
