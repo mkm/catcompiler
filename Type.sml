@@ -45,7 +45,7 @@ struct
     | (Cat.VarP (x,p), ty) => [(x,ty)]
     | (Cat.TrueP pos, Bool) => []
     | (Cat.FalseP pos, Bool) => []
-    | (Cat.NullP pos, ty) => []
+    | (Cat.NullP pos, TyVar _) => []
     | (Cat.TupleP (pats, pos), ty) => checkDups (List.concat (map (fn pat => checkPat pat ty ttable pos) pats))
     | _ => raise Error ("Pattern doesn't match type", pos)
 
