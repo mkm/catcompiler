@@ -122,22 +122,23 @@ struct
 			else raise Error ("Or has to be called with two booleans",pos)
 	   end
 	(*| Cat.Let(d, e, pos) =>*)
-	(*| Cat.MkTuple (es, t, pos) =>
+	| Cat.MkTuple (exps, typname, pos) =>
 		let
-			fun x(e::es, t::ts, pos) = let
-									val et = checkExp e vtable ftable ttable
-								in
-									if et = t
-								  	then x(es, ts, pos)
-								  	else raise Error ("Tuple of wrong type",pos)
-								end
-			  | x([], [], pos) = ()
-			  | x(_, _, pos) = raise Error ("Tuple of wrong type",pos)
+			fun x(exp::exps, typ::typs, pos, vtable, ftable, ttable) = 
+				let
+					val exptyp = checkExp exp vtable ftable ttable
+				in
+					if exptyp = checkType typ ttable
+				  	then x(exps, typs, pos, vtable, ftable, ttable)
+				  	else raise Error ("Tuple of wrong type",pos)
+				end
+			  | x([], [], pos, _, _, _) = ()
+			  | x(_,   _, pos, _, _, _) = raise Error ("Tuple of wrong type",pos)
 		in
-			(case lookup t ttable of
-			  SOME ty => let val _ = x(es, ty, pos) in TyVar t end
-		          | _ => raise Error ("Unknown type",pos))
-		end*)
+			(case lookup typname ttable of
+			  SOME typs => (x(exps, typs, pos, vtable, ftable, ttable); TyVar (typname))
+		    |       _ => raise Error ("Unknown type "^typname,pos))
+		end
 	(*| Case(e, m, pos)*)
 	(*| Cat.Null (name, pos) =>*)
 	
