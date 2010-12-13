@@ -105,8 +105,8 @@ struct
 		let
 			val t1 = "_equal1_"^newName()
 			val t2 = "_equal2_"^newName()
-			val code1 = compileExp Cat.Minus(e1,e2) vtable t1
-			val code2 = compileExp Cat.Num(-1) vtable t2
+			val code1 = compileExp (Cat.Minus(e1,e2,pos)) vtable t1
+			val code2 = compileExp (Cat.Num (~1,pos)) vtable t2
 		in
 			code1 @ code2 @ [Mips.XOR (place,t1,t2)]
 		end
