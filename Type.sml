@@ -6,6 +6,7 @@ exception Error of string*(int*int)
 
 type pos = int*int
 
+
 datatype CType = Int | Bool | TyVar of string
 
 type TTable = (string * CType list) list
@@ -43,6 +44,10 @@ fun checkType te ttable =
 fun convertType (Cat.Int _) = Int
   | convertType (Cat.Bool _) = Bool
   | convertType (Cat.TyVar (s, _)) = TyVar s
+
+fun typeName Int = "Int"
+  | typeName Bool = "Bool"
+  | typeName (TyVar s) = "TyVar "^s
 
 (* Check pattern and return vtable *)
 fun checkPat pat ty (ttable : TTable) pos =
@@ -150,7 +155,7 @@ fun checkExp exp vtable ftable (ttable : TTable) =
 				        in
 					          if exptyp = typ
 				  	        then x(exps, typs, pos, vtable, ftable, ttable)
-				  	        else raise Error ("Tuple of wrong type",pos)
+				  	        else raise Error ("Tuple of wrong type, expected "^ typeName exptyp ^" got " ^ typeName typ,pos)
 				        end
 			        | x([], [], pos, _, _, _) = ()
 			        | x(_,   _, pos, _, _, _) = raise Error ("Tuple of wrong type",pos)
@@ -168,7 +173,7 @@ fun checkExp exp vtable ftable (ttable : TTable) =
 					          val expt = checkExp mexp vtable ftable ttable
 				        in
 					          if lastexp <> expt
-					          then raise Error("Pattern mismatch", pos)
+					          then raise Error("Pattern mismatch got "^typeName lastexp^" expected "^typeName expt, pos)
 					          else (checkPat mpat t ttable pos; expt)
 				        end
 			        | patCheck(t, [], _, _, _, _) = t
