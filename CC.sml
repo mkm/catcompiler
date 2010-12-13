@@ -6,10 +6,11 @@ struct
 fun createLexerStream ( is : BasicIO.instream ) =
     Lexing.createLexer ( fn buff => fn n => Nonstdio.buff_input is buff 0 n)
 
-fun errorMess s = TextIO.output (TextIO.stdErr,s ^ "\n");
+fun errorMess s = (TextIO.output (TextIO.stdErr,s ^ "\n"); raise Fail ("Compilation failed"))
 
-fun compile filename =  
+fun compile filename flags =  
     let
+        val ignoreGenError = List.exists (fn x => x = "--ignore-gen-error") flags
         val lexbuf = createLexerStream (BasicIO.open_in (filename ^ ".cat"))
     in
         let
@@ -35,14 +36,17 @@ fun compile filename =
                errorMess ("Lexical error: " ^mess^ " at line "
                           ^ makestring lin ^ ", column " ^ makestring col)
 	           | Compiler.Error (mess,(lin,col)) =>
-               errorMess ("Compiler error: " ^mess^ " at line "
-                          ^ makestring lin ^ ", column " ^ makestring col)
+               if ignoreGenError
+               then ()
+               else errorMess ("Compiler error: " ^mess^ " at line "
+                               ^ makestring lin ^ ", column " ^ makestring col)
 	           | Type.Error (mess,(lin,col)) =>
                errorMess ("Type error: " ^mess^ " at line "
                           ^ makestring lin ^ ", column " ^ makestring col)
              | SysErr (s,_) => errorMess ("Exception: " ^ s)
     end
 
-val _ = compile (List.nth(Mosml.argv (),1))
-
+val _ = case Mosml.argv () of
+            (_::file::flags) => compile file flags
+          | [] => errorMess "No arguments"
 end
