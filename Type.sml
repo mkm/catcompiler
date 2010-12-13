@@ -43,9 +43,9 @@ struct
     case (pat,ty) of
       (Cat.NumP _, Int) => []
     | (Cat.VarP (x,p), ty) => [(x,ty)]
-    | (Cat.TrueP pos, ty) => []
-    | (Cat.FalseP pos, ty) => []
-    | (Cat.NullP pos, ty) => []
+    | (Cat.TrueP pos, Bool) => []
+    | (Cat.FalseP pos, Bool) => []
+    | (Cat.NullP pos, TyVar _) => []
     | (Cat.TupleP (pats, pos), ty) => checkDups (List.concat (map (fn pat => checkPat pat ty ttable pos) pats))
     | _ => raise Error ("Pattern doesn't match type", pos)
 
@@ -144,8 +144,23 @@ struct
 			  SOME typs => (x(exps, typs, pos, vtable, ftable, ttable); TyVar (typname))
 		    |       _ => raise Error ("Unknown type "^typname,pos))
 		end
-	(*| Case(e, m, pos)*)
-	(*| Cat.Null (name, pos) =>*)
+	| Cat.Case(e, m, pos) => 
+		let
+			val t = checkExp e vtable ftable ttable
+			fun patCheck (t, (mpat, mexp)::ms, vtable, ftable, ttable, pos) = 
+				let
+					val lastexp = patCheck(t,ms,vtable,ftable,ttable, pos)
+					val expt = checkExp mexp vtable ftable ttable
+				in
+					if lastexp <> expt
+					then raise Error("Pattern mismatch", pos)
+					else (checkPat mpat t ttable pos; expt)
+				end
+			  | patCheck(t, [], _, _, _, _) = t
+		in
+			patCheck( t, m, vtable, ftable, ttable, pos)
+		end
+	| Cat.Null (name, pos) => TyVar name
 	
   | _ => raise Fail ("checkExp")
 
