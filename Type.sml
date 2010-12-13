@@ -164,22 +164,7 @@ fun checkExp exp vtable ftable (ttable : TTable) =
 			           SOME (typs : CType list) => (x(exps, typs, pos, vtable, ftable, ttable); TyVar (typname))
 		           |       _ => raise Error ("Unknown type "^typname,pos))
 		    end
-	    | Cat.Case(e, m, pos) => 
-		    let
-			      val t = checkExp e vtable ftable ttable
-			      fun patCheck (t, (mpat, mexp)::ms, vtable, ftable, ttable : TTable, pos) = 
-				        let
-					          val lastexp = patCheck(t,ms,vtable,ftable,ttable, pos)
-					          val expt = checkExp mexp vtable ftable ttable
-				        in
-					          if lastexp <> expt
-					          then raise Error("Pattern mismatch got "^typeName lastexp^" expected "^typeName expt, pos)
-					          else (checkPat mpat t ttable pos; expt)
-				        end
-			        | patCheck(t, [], _, _, _, _) = t
-		    in
-			      patCheck( t, m, vtable, ftable, ttable, pos)
-		    end
+	    | Cat.Case(e, m, pos) => checkMatch m (checkExp e vtable ftable ttable) vtable ftable ttable pos
 	    | Cat.Null (name, pos) => TyVar name
 
 and checkDec [] vtable ftable ttable = vtable
