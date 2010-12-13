@@ -61,13 +61,8 @@ struct
     | _ => raise Error ("compilePat", (0, 0))
 
   (* compile expression *)
-  (* True of pos
-   | False of pos
+  (* 
    | Null of string * pos
-   | Less of Exp * Exp * pos
-   | Not of Exp * pos
-   | And of Exp * Exp * pos
-   | Or of Exp * Exp * pos
    | Let of Dec * Exp * pos
    | MkTuple of Exp list * string * pos
    | Case of Exp * Match * pos
@@ -106,6 +101,13 @@ struct
 		in
 			c
 		end
+	| Cat.False (pos) => 
+		let
+			val t = "_false_"^newName()
+			val c = compileExp (Cat.Num(0, pos)) vtable t
+		in
+			c
+		end
     | Cat.Equal (e1,e2,pos) =>
 		let
 			val t1 = "_equal1_"^newName()
@@ -115,12 +117,48 @@ struct
 		in
 			code1 @ code2 @ [Mips.XOR (place,t1,t2)]
 		end
+    | Cat.Less (e1,e2,pos) =>
+		let
+			val t1 = "_less1_"^newName()
+			val t2 = "_less2_"^newName()
+			val code1 = compileExp e1 vtable t1
+			val code2 = compileExp e2 vtable t2
+		in
+			code1 @ code2 @ [Mips.SLT (place,t1,t2)]
+		end
+	| Cat.Not (e, pos) =>
+		let
+			val t1 = "_not1_"^newName()
+			val code1 = compileExp e vtable t1
+			val t2 = "_not2_"^newName()
+			val code2 = compileExp (Cat.Num(~1,pos)) vtable t2
+		in
+			code1 @ code2 @ [Mips.XOR (place, t1, t2)]
+		end
+	| Cat.And (e1, e2, pos) =>
+		let
+			val t1 = "_and1_"^newName()
+			val t2 = "_and2_"^newName()
+			val code1 = compileExp e1 vtable t1
+			val code2 = compileExp e2 vtable t2
+		in
+			code1 @ code2 @ [Mips.AND (place, t1, t2)]
+		end
+	| Cat.Or (e1, e2, pos) =>
+		let
+			val t1 = "_or1_"^newName()
+			val t2 = "_or2_"^newName()
+			val code1 = compileExp e1 vtable t1
+			val code2 = compileExp e2 vtable t2
+		in
+			code1 @ code2 @ [Mips.OR (place, t1, t2)]
+		end
     | Cat.If (e1,e2,e3,pos) =>
 		let
-			val if_ = "if__"^newName()
-			val then_ = "then__"^newName()
-			val else_ = "else__"^newName()
-			val end_ = "end__"^newName()
+			val if_ = "_if_"^newName()
+			val then_ = "_then_"^newName()
+			val else_ = "_else_"^newName()
+			val end_ = "_end_"^newName()
 			val if_code   = compileExp e1 vtable if_
 			val then_code = compileExp e2 vtable then_
 			val else_code = compileExp e3 vtable else_
