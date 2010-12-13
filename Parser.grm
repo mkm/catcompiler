@@ -109,12 +109,12 @@ Exps :	  Exp		{ [$1] }
 ParenExp : LPAR Exp RPAR { $2 }
 ;
 
-Tuple : ParenExp COLON ID { Cat.MkTuple ($1, #1 $3, $2) }
-     | LPAR TupleBody RPAR { $1 }
+Tuple : ParenExp COLON ID { Cat.MkTuple ([$1], #1 $3, $2) }
+     | LPAR TupleBody RPAR COLON ID { Cat.MkTuple ($2, #1 $5, $1) }
 ;
 
 TupleBody : Exp COMMA Exp { [$1] }
-     | TupleBody COMMA TupleBody { $1 @ $3 }
+     | Exp COMMA TupleBody { $1 :: $3 }
 ;
 
 Dec : Pat EQUAL Exp { [($1, $3, $2)] }
