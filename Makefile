@@ -35,7 +35,7 @@ $(CC) : CC.sml $(OBJS)
 Parser.sig : Parser.grm
 
 clean:
-	rm -f *.uo *.ui $(CC) *.asm *.test Lexer.sml Parser.sml
+	rm -f *.uo *.ui $(CC) *.asm *.test Lexer.sml Parser.sml Parser.sig
 
 Lexer.sml : Lexer.lex
 Parser.sml : Parser.sig
