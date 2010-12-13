@@ -58,7 +58,7 @@ struct
         in
           ([Mips.MOVE (xt,v)], (x,xt)::vtable)
         end
-    | _ => raise Fail ("compilePat")
+    | _ => raise Error ("compilePat", (0, 0))
 
   (* compile expression *)
   (* True of pos
@@ -161,7 +161,7 @@ struct
 	   Mips.LA ("4","_cr_"),
 	   Mips.LI ("2","4"),  (* write_string syscall *)
 	   Mips.SYSCALL]
-    | _ => raise Fail ("compileExp")
+    | _ => raise Error ("compileExp", (0, 0))
 
   and compileMatch [] arg res endLabel failLabel vtable =
         [Mips.J failLabel]

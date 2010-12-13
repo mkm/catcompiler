@@ -3,47 +3,50 @@
 structure CC =
 struct
 
-  fun createLexerStream ( is : BasicIO.instream ) =
-      Lexing.createLexer ( fn buff => fn n => Nonstdio.buff_input is buff 0 n)
+fun createLexerStream ( is : BasicIO.instream ) =
+    Lexing.createLexer ( fn buff => fn n => Nonstdio.buff_input is buff 0 n)
 
-  fun errorMess s = TextIO.output (TextIO.stdErr,s ^ "\n");
+fun errorMess s = (TextIO.output (TextIO.stdErr,s ^ "\n"); raise Fail ("Compilation failed"))
 
-  fun compile filename =  
-      let
-        val lexbuf = createLexerStream
-			  (BasicIO.open_in (filename ^ ".cat"))
-      in
+fun compile filename flags =  
+    let
+        val ignoreGenError = List.exists (fn x => x = "--ignore-gen-error") flags
+        val lexbuf = createLexerStream (BasicIO.open_in (filename ^ ".cat"))
+    in
         let
-          val pgm = Parser.Prog Lexer.Token lexbuf
-	  val () = Type.checkProgram pgm
-          val code = Compiler.compile pgm
+            val pgm = Parser.Prog Lexer.Token lexbuf
+	          val () = Type.checkProgram pgm
+            val code = Compiler.compile pgm
         in 
-          let
-            val outfile = TextIO.openOut (filename ^ ".asm")
-          in
-            (TextIO.output (outfile, Mips.pp_mips_list code);
-	     TextIO.closeOut outfile)
-          end
+            let
+                val outfile = TextIO.openOut (filename ^ ".asm")
+            in
+                (TextIO.output (outfile, Mips.pp_mips_list code);
+	               TextIO.closeOut outfile)
+            end
         end
-          handle Parsing.yyexit ob => errorMess "Parser-exit\n"
-               | Parsing.ParseError ob =>
-                   let val (lin,col) = Lexer.getPos lexbuf
-                   in
-                     errorMess ("Parse-error at line "
-                      ^ makestring lin ^ ", column " ^ makestring col)
-                   end
-               | Lexer.LexicalError (mess,(lin,col)) =>
-                     errorMess ("Lexical error: " ^mess^ " at line "
-                      ^ makestring lin ^ ", column " ^ makestring col)
-	       | Compiler.Error (mess,(lin,col)) =>
-                     errorMess ("Compiler error: " ^mess^ " at line "
-                      ^ makestring lin ^ ", column " ^ makestring col)
-	       | Type.Error (mess,(lin,col)) =>
-                     errorMess ("Type error: " ^mess^ " at line "
-                      ^ makestring lin ^ ", column " ^ makestring col)
-               | SysErr (s,_) => errorMess ("Exception: " ^ s)
-      end
+        handle Parsing.yyexit ob => errorMess "Parser-exit\n"
+             | Parsing.ParseError ob =>
+               let val (lin,col) = Lexer.getPos lexbuf
+               in
+                   errorMess ("Parse-error at line "
+                              ^ makestring lin ^ ", column " ^ makestring col)
+               end
+             | Lexer.LexicalError (mess,(lin,col)) =>
+               errorMess ("Lexical error: " ^mess^ " at line "
+                          ^ makestring lin ^ ", column " ^ makestring col)
+	           | Compiler.Error (mess,(lin,col)) =>
+               if ignoreGenError
+               then ()
+               else errorMess ("Compiler error: " ^mess^ " at line "
+                               ^ makestring lin ^ ", column " ^ makestring col)
+	           | Type.Error (mess,(lin,col)) =>
+               errorMess ("Type error: " ^mess^ " at line "
+                          ^ makestring lin ^ ", column " ^ makestring col)
+             | SysErr (s,_) => errorMess ("Exception: " ^ s)
+    end
 
-  val _ = compile (List.nth(Mosml.argv (),1))
-
+val _ = case Mosml.argv () of
+            (_::file::flags) => compile file flags
+          | [] => errorMess "No arguments"
 end

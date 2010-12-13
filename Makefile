@@ -3,16 +3,19 @@ SMLLEX=/opt/mosml/bin/mosmllex
 SMLYAC=/opt/mosml/bin/mosmlyac
 ASM=java -jar Mars.jar
 
-TESTS=fib.test pair.test
+RUNTESTS=fib.test
+COMPTESTS=pair.type.asm ackermann.type.asm logic.type.asm option.type.asm qsort.type.asm reverse.type.asm rwlist.type.asm treesort.type.asm
 OBJS=Cat.uo Compiler.uo Lexer.uo Mips.uo Parser.uo RegAlloc.uo Type.uo
 CC=./CC
 
-testresult : $(TESTS)
-	cat $(TESTS) >$@
+test : testresult $(COMPTESTS)
+
+testresult : $(RUNTESTS)
+	cat $(RUNTESTS) >$@
 	test -z ${cat testresult}
 
 $(CC) : CC.sml $(OBJS)
-	$(SMLC) -o $@ $< >/dev/null
+	$(SMLC) -o $@ $<
 
 %.uo : %.sig %.sml
 	$(SMLC) -c $^
@@ -26,6 +29,9 @@ $(CC) : CC.sml $(OBJS)
 %.sig : %.grm
 	$(SMLYAC) -v $<
 
+%.type.asm : %.cat $(CC)
+	$(CC) $* --ignore-gen-error
+
 %.asm : %.cat $(CC)
 	$(CC) $*
 
@@ -35,7 +41,7 @@ $(CC) : CC.sml $(OBJS)
 Parser.sig : Parser.grm
 
 clean:
-	rm -f *.uo *.ui $(CC) *.asm *.test Lexer.sml Parser.sml Parser.sig
+	rm -f *.uo *.ui $(CC) *.asm *.test Lexer.sml Parser.sml Parser.sig testresult
 
 Lexer.sml : Lexer.lex
 Parser.sml : Parser.sig
