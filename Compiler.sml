@@ -36,33 +36,32 @@ struct
   val maxReg = 26      (* highest allocatable register *)
 
   (* compile pattern *)
-  fun compilePat p v vtable fail =
-    case p of
-      Cat.NumP (n,pos) =>
-        let
-	  val t = "_constPat_"^newName()
-        in
-          if n<32768 then
-	    ([Mips.LI (t, makeConst n),
-	      Mips.BNE (v,t,fail)],
-	     vtable)
-	  else
-	    ([Mips.LUI (t, makeConst (n div 65536)),
-	      Mips.ORI (t, t, makeConst (n mod 65536)),
-	      Mips.BNE (v,t,fail)],
-	     vtable)
-	end
-    | Cat.VarP (x,pos) =>
-        let
-          val xt = "_patVar_"^x^"_"^newName()
-        in
-          ([Mips.MOVE (xt,v)], (x,xt)::vtable)
-        end
-    | _ => raise Error ("compilePat", (0, 0))
+	fun compilePat p v vtable fail =
+		case p of
+			Cat.NumP (n,pos) =>
+				let
+					val t = "_constPat_"^newName()
+				in
+					if n<32768 then
+						([Mips.LI (t, makeConst n),
+						Mips.BNE (v,t,fail)],
+						vtable)
+					else
+						([Mips.LUI (t, makeConst (n div 65536)),
+						Mips.ORI (t, t, makeConst (n mod 65536)),
+						Mips.BNE (v,t,fail)],
+						vtable)
+				end
+			| Cat.VarP (x,pos) =>
+				let
+					val xt = "_patVar_"^x^"_"^newName()
+				in
+					([Mips.MOVE (xt,v)], (x,xt)::vtable)
+				end
+			| _ => raise Error ("compilePat", (0, 0))
 
   (* compile expression *)
   (* 
-   | Null of string * pos
    | Let of Dec * Exp * pos
    | MkTuple of Exp list * string * pos
    | Case of Exp * Match * pos
@@ -94,6 +93,8 @@ struct
 	in
 	  code1 @ code2 @ [Mips.SUB (place,t1,t2)]
 	end
+	| Cat.Null (_, pos) =>
+		[Mips.ADDI(place, "$0", "$0")]
 	| Cat.True (pos) => 
 		let
 			val t = "_true_"^newName()
