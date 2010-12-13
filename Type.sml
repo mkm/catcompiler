@@ -182,7 +182,7 @@ struct
 
   fun checkProgram (tyDecs, funDecs, e) =
     let
-      val ttable = map (fn (s, ts, _) => (s, ts)) tyDecs
+      val ttable = checkDups (map (fn (s, ts, _) => (s, ts)) tyDecs)
       val ftable = getFunDecs funDecs ttable []
       val _ = List.map (checkFunDec ftable ttable) funDecs
     in
