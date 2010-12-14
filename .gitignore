@@ -15,7 +15,6 @@ Mars.jar
 *.log
 *.aux
 *.nav
-*.out
 *.snm
 *.toc
 *.swp
