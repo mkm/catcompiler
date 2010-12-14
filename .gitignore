@@ -11,3 +11,12 @@ Parser.sig
 .DS_Store
 Mars.jar
 *.swp
+*.pdf
+*.log
+*.aux
+*.nav
+*.out
+*.snm
+*.toc
+*.swp
+*.synctex.gz
