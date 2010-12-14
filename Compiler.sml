@@ -84,11 +84,6 @@ fun compilePat p v vtable fail =
                    
                    
 (* compile expression *)
-(* 
-      | Let of Dec * Exp * pos
-             | MkTuple of Exp list * string * pos
-                        | Case of Exp * Match * pos
- *)
 fun compileExp e vtable place =
     case e of
         Cat.Num (n,pos) =>
@@ -200,16 +195,6 @@ fun compileExp e vtable place =
             @ [Mips.LABEL(then_)] @ then_code
             @ [Mips.LABEL(end_)]
         end
-      | Cat.Less (e1,e2,pos) =>
-        let
-            val t1 = "_less1_"^newName()
-            val t2 = "_less2_"^newName()
-            val code1 = compileExp e1 vtable t1
-            val code2 = compileExp e2 vtable t2
-        in
-            code1 @ code2 @ [Mips.SLT (place,t1,t2)]
-        end
-
       | Cat.Apply (f,e,pos) =>
         let
             val t1 = "_apply_"^newName()
@@ -242,7 +227,6 @@ fun compileExp e vtable place =
             [Mips.ADDI (HP, HP, makeConst (fieldCount * 4))] @
             loads
         end
-      | _ => raise Error ("compileExp", (0, 0))
 
 and compileMatch [] arg res endLabel failLabel vtable =
     [Mips.J failLabel]
