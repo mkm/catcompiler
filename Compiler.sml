@@ -8,6 +8,8 @@ struct
   (* Use "raise Error (message,position)" for error messages *)
   exception Error of string*(int*int)
 
+  fun range lo hi = if lo > hi then [] else lo :: range (lo + 1) hi
+
   (* Name generator.  Call with, e.g., t1 = "tmp"^newName () *)
   val counter = ref 0
 
@@ -116,30 +118,18 @@ struct
 	end
 	| Cat.Null (_, pos) =>
 		[Mips.ADDI(place, "$0", "$0")]
-	| Cat.True (pos) => 
-		let
-			val t = "_true_"^newName()
-			val c = compileExp (Cat.Num(~1, pos)) vtable t
-		in
-			c
-		end
-	| Cat.False (pos) => 
-		let
-			val t = "_false_"^newName()
-			val c = compileExp (Cat.Num(0, pos)) vtable t
-		in
-			c
-		end
-	| Cat.Let (d, e, p) =>
+	(*| Cat.Let (d, e, p) =>
 		let
 			val result = "_let1_"^newName()
 			val endLabel = "_let2_"^newName()
+			val arg = "_let3_"^newName()
 			val exp = compileExp e vtable place
 			val m = compileMatch d result endLabel "_Error_" vtable
 		in
 			m @ [Mips.LABEL endLabel] @ exp
-		end
-			
+		end*)
+	| Cat.True (pos) => compileExp (Cat.Num(~1, pos)) vtable place
+	| Cat.False (pos) => compileExp (Cat.Num(0, pos)) vtable place
     | Cat.Equal (e1,e2,pos) =>
 		let
 			val t1 = "_equal1_"^newName()
@@ -231,7 +221,19 @@ struct
 	   Mips.LA ("4","_cr_"),
 	   Mips.LI ("2","4"),  (* write_string syscall *)
 	   Mips.SYSCALL]
-    | c => raise Error ("compileExp "^catcon(c), (0, 0))
+    | Cat.MkTuple (es, t, pos) =>
+      let
+          val fieldCount = length es
+          val places = List.tabulate (fieldCount, fn _ => "_tuple_" ^ newName ())
+          val fields = map (fn (e, place) => compileExp e vtable place) (ListPair.zip (es, places))
+          val ptr = "_ptr_" ^ newName ()
+          val loads = map (fn (i, place) => Mips.SW (place, HP, makeConst (i * 4))) (ListPair.zip (range 0 (fieldCount - 1), places))
+      in
+          List.concat fields @
+          [Mips.ADDI (HP, HP, makeConst (fieldCount * 4))] @
+          loads
+      end
+    | _ => raise Error ("compileExp", (0, 0))
 
   and compileMatch [] arg res endLabel failLabel vtable =
         [Mips.J failLabel]
