@@ -59,7 +59,8 @@ struct
 					([Mips.MOVE (xt,v)], (x,xt)::vtable)
 				end
 			| _ => raise Error ("compilePat", (0, 0))
-
+	
+		
   (* compile expression *)
   (* 
    | Let of Dec * Exp * pos
@@ -109,6 +110,16 @@ struct
 		in
 			c
 		end
+	| Cat.Let (d, e, p) =>
+		let
+			val result = "_let1_"^newName()
+			val endLabel = "_let2_"^newName()
+			val exp = compileExp e vtable place
+			val m = compileMatch d result endLabel "_Error_" vtable
+		in
+			m @ [Mips.Label endLabel] @ exp
+		end
+			
     | Cat.Equal (e1,e2,pos) =>
 		let
 			val t1 = "_equal1_"^newName()
