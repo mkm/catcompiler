@@ -24,6 +24,26 @@ struct
   fun isIn x [] = false
     | isIn x (y::ys) = x=y orelse isIn x ys
 
+	fun catcon (Cat.Num _) = "Num"
+	  | catcon (Cat.True _) = "True"
+	  | catcon (Cat.False _) = "False"
+	  | catcon (Cat.Null _) = "Null"
+	  | catcon (Cat.Var _) = "Var"
+	  | catcon (Cat.Plus _) = "Plus"
+	  | catcon (Cat.Minus _) = "Minus"
+	  | catcon (Cat.Equal _) = "Equal"
+	  | catcon (Cat.Less _) = "Less"
+	  | catcon (Cat.Not _) = "Not"
+	  | catcon (Cat.And _) = "And"
+	  | catcon (Cat.Or _) = "Or"
+	  | catcon (Cat.Let _) = "Let"
+	  | catcon (Cat.If _) = "If"
+	  | catcon (Cat.MkTuple _) = "MkTuple"
+	  | catcon (Cat.Case _) = "Case"
+	  | catcon (Cat.Apply _) = "Apply"
+	  | catcon (Cat.Read _) = "Read"
+	  | catcon (Cat.Write _) = "Write"
+
   (* link register *)
   val RA = "31"
   (* Register for stack pointer *)
@@ -117,7 +137,7 @@ struct
 			val exp = compileExp e vtable place
 			val m = compileMatch d result endLabel "_Error_" vtable
 		in
-			m @ [Mips.Label endLabel] @ exp
+			m @ [Mips.LABEL endLabel] @ exp
 		end
 			
     | Cat.Equal (e1,e2,pos) =>
@@ -211,7 +231,7 @@ struct
 	   Mips.LA ("4","_cr_"),
 	   Mips.LI ("2","4"),  (* write_string syscall *)
 	   Mips.SYSCALL]
-    | _ => raise Error ("compileExp", (0, 0))
+    | c => raise Error ("compileExp "^catcon(c), (0, 0))
 
   and compileMatch [] arg res endLabel failLabel vtable =
         [Mips.J failLabel]
