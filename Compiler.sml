@@ -98,6 +98,17 @@ fun compileExp e vtable place =
             [Mips.LUI (place, makeConst (n div 65536)),
              Mips.ORI (place, place, makeConst (n mod 65536))]
       | Cat.Var (x,pos) => [Mips.MOVE (place, lookup x vtable pos)]
+      | Cat.Case (exp, matches, pos) =>
+        let
+            val argPlace = "_casearg_" ^ newName ()
+            val argCode = compileExp exp vtable argPlace
+            val endLabel = "_caseend_" ^ newName ()
+            val failLabel = "_Error_"
+        in
+            argCode @
+            compileMatch matches argPlace place endLabel failLabel vtable @
+            [Mips.LABEL endLabel]
+        end
       | Cat.Plus (e1,e2,pos) =>
         let
             val t1 = "_plus1_"^newName()

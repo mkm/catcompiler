@@ -1,4 +1,11 @@
-type bb = (bool,bool)
-case (1=0,1=0) : bb of
-  x => 5
+fun f : int -> int
+  n => case n of
+    0 => 0
+  | 1 => f 42
+  | x => case write x of
+      y => f read
+    end
+  end
 end
+
+f 2
