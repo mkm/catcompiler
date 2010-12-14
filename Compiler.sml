@@ -129,16 +129,14 @@ fun compileExp e vtable place =
         end
       | Cat.Null (_, pos) =>
         [Mips.ADDI(place, "$0", "$0")]
-      | Cat.Let ([], e, p) => compileExp e vtable place
-			| Cat.Let ((pat,exp,_)::ds, e, p) => 
-				let
-					val argn = "_letarg_"^newName()
-					val ee = compileExp (Cat.Let(ds, e, p)) vtable argn
-					val endLabel = "_letend_"^newName()
-				in
-					(compileMatch [(pat,exp)] argn place endLabel "_Error_" vtable) @ ee @ [ Mips.LABEL endLabel]
-				end
-				
+      | Cat.Let ([], expResult, _) => compileExp expResult vtable place
+      | Cat.Let ((patBind, expBind, _)::ds, expResult, pos) =>
+        let
+            val rest = Cat.Let (ds, expResult, pos)
+            val r = Cat.Case (expBind, [(patBind, rest)], pos)
+        in
+            compileExp r vtable place
+        end
       | Cat.True (pos) => compileExp (Cat.Num(~1, pos)) vtable place
       | Cat.False (pos) => compileExp (Cat.Num(0, pos)) vtable place
       | Cat.Equal (e1,e2,pos) =>
