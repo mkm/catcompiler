@@ -1,4 +1,3 @@
-type ii = (int, int)
+type bb = (bool, bool)
 
-
-5
+(true, false) : bb
