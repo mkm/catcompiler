@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{fancyhdr}
 \usepackage[danish]{babel}
+\usepackage{verbatim}
 \pagestyle{fancyplain}
 \author{Mikkel Kragh Mathiesen \& Rasmus Abrahamsen}
 \title{Catcompiler}
@@ -53,14 +54,20 @@ Declarations support pattern-matching. Therefore each expression for each patter
 	\item {\tt Cat.Equal } \\
 	A new expression subtracting the expressions from each other is compiled and stored in a temporary variable which is then XOR-ed with $-1$.
 	\item {\tt Cat.Less } \\
-	
+	The two expressions are compiled and stored into two variables. A Mips {\tt SLT}-instruction (set-less-than) is added to compare the two expressions.
 	\item {\tt Cat.Not } \\
-	\item {\tt Cat.And } \\
-	\item {\tt Cat.Or } \\
+	An expression is compiled and the returning value is negated using the Mips {\tt XOR}-instruction which is the return value.
+	\item {\tt Cat.And } \& {\tt Cat.Or } \\
+	Both expressions are compiled and their return values are used as inputs in the Mips {\tt AND}- or {\tt OR}-instruction.
 	\item {\tt Cat.Let } \\
+	The {\tt let} expression is built using the {\tt case} expression. For example {\tt let x = 5 in y} is equivalent to {\tt case x of y}.
 	\item {\tt Cat.If } \\
+	The three expressions are compiled and their values bound to variables. The if-expression comes first, then comes a Mips {\tt BNE} instruction which branches if the boolean expression is not $0$. It then jumps to the then code.
+	If it does not branch, it runs the else and then jumps to the ending label which is after any of the instructions built from the if expressions.
 	\item {\tt Cat.MkTuple } \\
+	% TODO
 	\item {\tt Cat.Case } \\
+	% TODO
 \end{itemize}
 
 \section{Results}

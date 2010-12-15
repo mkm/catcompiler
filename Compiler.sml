@@ -200,14 +200,13 @@ fun compileExp e vtable place =
         let
             val if_ = "_if_"^newName()
             val then_ = "_then_"^newName()
-            val else_ = "_else_"^newName()
             val end_ = "_end_"^newName()
             val if_code   = compileExp e1 vtable if_
             val then_code = compileExp e2 vtable then_
             val else_code = compileExp e3 vtable else_
         in
             if_code @ [Mips.BNE (if_, "0", then_)] 
-            @ [Mips.LABEL(else_)] @ else_code
+            @ else_code
             @ [Mips.J(end_)]
             @ [Mips.LABEL(then_)] @ then_code
             @ [Mips.LABEL(end_)]
