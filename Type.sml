@@ -60,13 +60,13 @@ fun checkPat pat ty (ttable : TTable) pos =
       | (Cat.TupleP (pats, pos), TyVar name) => (
         case lookup name ttable of
             SOME tys => checkPats pats tys ttable pos
-          | NONE => raise Error ("wtf", pos)
+          | NONE => raise Error ("unknown tuple type in pattern", pos)
         )
       | _ => raise Error ("Pattern doesn't match type", pos)
 
 and checkPats [] [] ttable pos = []
   | checkPats (pat::pats) (ty::tys) ttable pos = combineTables (checkPat pat ty ttable pos) (checkPats pats tys ttable pos) pos
-  | checkPats _ _ _ pos = raise Error ("your mother is an error", pos)
+  | checkPats _ _ _ pos = raise Error ("mismatch between length of tuple pattern and type", pos)
                                 
 
 (* check expression and return type *)
