@@ -1,0 +1,7 @@
+type ii = (int, int)
+
+let x = (3, 4) : ii in
+    case x of
+         (3, 4) => write 2
+       | x => write 3
+    end

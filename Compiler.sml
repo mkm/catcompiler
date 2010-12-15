@@ -86,11 +86,18 @@ fun compilePat p v vtable fail =
       | Cat.TupleP (pats, pos) =>
         let
             val patCount = length pats
-            fun mkExtractor offset = []
-            val extractors = List.concat (List.tabulate (patCount, mkExtractor))
-            val code = []
+            fun compileSubPat (index, pat) =
+                let
+                    val place = "_extract_" ^ newName ()
+                    val extractor = [Mips.LW (place, v, makeConst (index * 4))]
+                    val (code, vtable') = compilePat pat place vtable fail
+                in
+                    (extractor @ code, vtable')
+                end
+            val subPats = map compileSubPat (ListPair.zip (range 0 (patCount - 1), pats))
+            val result = foldr (fn ((x, y), (xs, ys)) => (x @ xs, y @ ys)) ([], vtable) subPats
         in
-            (code, [])
+            result
         end
                    
 (* compile expression *)
