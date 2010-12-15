@@ -243,13 +243,13 @@ fun compileExp e vtable place =
         let
             val fieldCount = length es
             val places = List.tabulate (fieldCount, fn _ => "_tuple_" ^ newName ())
-            val fields = map (fn (e, place) => compileExp e vtable place) (ListPair.zip (es, places))
-            val loads = map (fn (i, place) => Mips.SW (place, HP, makeConst (i * 4))) (ListPair.zip (range 0 (fieldCount - 1), places))
+            val fields = map (fn (e, localPlace) => compileExp e vtable localPlace) (ListPair.zip (es, places))
+            val loads = map (fn (i, localPlace) => Mips.SW (localPlace, place, makeConst (i * 4))) (ListPair.zip (range 0 (fieldCount - 1), places))
         in
             List.concat fields @
             [Mips.ADDI (HP, HP, makeConst (fieldCount * 4))] @
-            loads @
-            [Mips.MOVE (place, HP)]
+            [Mips.MOVE (place, HP)] @
+            loads
         end
 
 and compileMatch [] arg res endLabel failLabel vtable =
