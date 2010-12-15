@@ -18,18 +18,26 @@
 % For Type.sml skal kort beskrives, hvordan typerne checkes for de nye konstruktioner. Brug evt. en form, der ligner figur 6.2 i Basics of Compiler Design.
 
 \begin{itemize}
-	\item Cat.True
-	\item Cat.False
-	\item Cat.Equal
-	\item Cat.Less
-	\item Cat.Not
-	\item Cat.And
-	\item Cat.Or
-	\item Cat.If
-	\item Cat.Let
-	\item Cat.MkTuple
-	\item Cat.Case
-	\item Cat.Null
+	\item {\tt Cat.True} \& {\tt Cat.False} \\
+	Returns {\tt bool}.
+	\item {\tt Cat.Equal} \\
+	The two expressions are evaluated to a type each. If both types are eiher {\tt int} or {\tt bool}, {\tt bool} will be returned.
+	\item {\tt Cat.Less} \\
+	Both expressions are evaluated and should be {\tt int} then {\tt bool} is returned.
+	\item {\tt Cat.Not} \\
+	The expression is evaluated and should be {\tt bool} and {\tt bool} is returned.
+	\item {\tt Cat.And} \& {\tt Cat.Or} \\
+	Both expressions should be {\tt bool} and the result will be {\tt bool}.
+	\item {\tt Cat.If} \\
+	The conditional expression should be {\tt bool} and the then-expression and else-expression should both have the same type.
+	\item {\tt Cat.Let} \\
+	% explain checkDec
+	The declarations are evaluated and a symbol table is returned, which is used when evaluating the expression.
+	\item {\tt Cat.MkTuple} \\
+	When creating a tuple, a list of expressions are received. These expressions are matched against the definition of the tuple type. Each element in the list is matched against each element in the definition of the tuple. If anything does not match or the lists have differing lengths, an exception is raised.
+	\item {\tt Cat.Case} \\
+	\item {\tt Cat.Null} \\
+	Returns {\tt TyVar name} of the {\tt Null}.
 \end{itemize}
 
 \section{Compiling}
