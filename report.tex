@@ -31,17 +31,37 @@
 	\item {\tt Cat.If} \\
 	The conditional expression should be {\tt bool} and the then-expression and else-expression should both have the same type.
 	\item {\tt Cat.Let} \\
-	% explain checkDec
 	The declarations are evaluated and a symbol table is returned, which is used when evaluating the expression.
 	\item {\tt Cat.MkTuple} \\
 	When creating a tuple, a list of expressions are received. These expressions are matched against the definition of the tuple type. Each element in the list is matched against each element in the definition of the tuple. If anything does not match or the lists have differing lengths, an exception is raised.
 	\item {\tt Cat.Case} \\
+	The built-in function {\tt checkMatch} is called and does everything we need.
 	\item {\tt Cat.Null} \\
 	Returns {\tt TyVar name} of the {\tt Null}.
 \end{itemize}
+Declarations support pattern-matching. Therefore each expression for each patter needs to be checked to see if they have the same type.
 
 \section{Compiling}
 % For Compiler.sml skal kort beskrives, hvordan kode genereres for de nye konstruktioner. Brug evt. en form, der ligner figur 7.3 i Basics of Compiler Design.
+\begin{itemize}
+	\item {\tt Cat.True } \\
+	Returns $-1$. Every bit is set to $1$. A variable is true when every bit is $1$.
+	\item {\tt Cat.False } \\
+	Returns $0$. Every bit is $0$. 
+	\item {\tt Cat.Null } \\
+	Returns $0$.
+	\item {\tt Cat.Equal } \\
+	A new expression subtracting the expressions from each other is compiled and stored in a temporary variable which is then XOR-ed with $-1$.
+	\item {\tt Cat.Less } \\
+	
+	\item {\tt Cat.Not } \\
+	\item {\tt Cat.And } \\
+	\item {\tt Cat.Or } \\
+	\item {\tt Cat.Let } \\
+	\item {\tt Cat.If } \\
+	\item {\tt Cat.MkTuple } \\
+	\item {\tt Cat.Case } \\
+\end{itemize}
 
 \section{Results}
 % Rapporten skal beskrive hvorvidt oversættelse og kørsel af eksempelprogram- mer (jvf. afsnit 8) giver den forventede opførsel, samt beskrivelse af afvigelser der- fra. Endvidere skal det vurderes, i hvilket omfang de udleverede testprogrammer er dækkende og der skal laves nye testprogrammer, der dækker de største mangler ved testen.
