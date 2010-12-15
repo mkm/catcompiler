@@ -346,7 +346,7 @@ fun compile (tys, funs, e) =
            Mips.ASCIIZ "\n",
            Mips.LABEL "_ErrorString_",
            Mips.ASCIIZ "Match failed near line ",
-           Mips.ALIGN "2",
+           Mips.ALIGN "4",
            Mips.LABEL "_heap_",
            Mips.SPACE "100000"]
     end
