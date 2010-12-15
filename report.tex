@@ -13,7 +13,9 @@
 \maketitle
 
 \section{Parsing}
-% For Parser.grm skal der kort forklares hvordan grammatikken er gjort entydig (ved omskrivning eller brug af operatorpræcedenserklæringer) samt beskrivelse af eventuelle ikke-åbenlyse løsninger, f.eks. i forbindelse med opbygning af abstrakt syntaks. Det skal bemærkes, at alle konflikter skal fjernes v.h.a. præcedenserklæ- ringer eller omskrivning af syntaks. Med andre ord må MosML-yacc ikke rappor- tere konflikter i tabellen.
+% For Parser.grm skal der kort forklares hvordan grammatikken er gjort entydig (ved omskrivning eller brug af operatorpræcedenserklæringer) samt beskrivelse af eventuelle ikke-åbenlyse løsninger, f.eks. i forbindelse med opbygning af abstrakt syntaks. Det skal bemærkes, at alle konflikter skal fjernes v.h.a. præcedenserklæringer eller omskrivning af syntaks. Med andre ord må MosML-yacc ikke rapportere konflikter i tabellen.
+
+Parsing of tuples with a single element has been problematic. We have solved it by matching comma separated expressions in parentheses. Then we match said expressions with colon id.
 
 \section{Typechecking}
 % For Type.sml skal kort beskrives, hvordan typerne checkes for de nye konstruktioner. Brug evt. en form, der ligner figur 6.2 i Basics of Compiler Design.
@@ -60,19 +62,21 @@ Declarations support pattern-matching. Therefore each expression for each patter
 	\item {\tt Cat.And } \& {\tt Cat.Or } \\
 	Both expressions are compiled and their return values are used as inputs in the Mips {\tt AND}- or {\tt OR}-instruction.
 	\item {\tt Cat.Let } \\
-	The {\tt let} expression is built using the {\tt case} expression. For example {\tt let x = 5 in y} is equivalent to {\tt case x of y}.
+	The {\tt let} expression is built using the {\tt case} expression. For example {\tt let x = z in y} is equivalent to {\tt case z of x => y}.
 	\item {\tt Cat.If } \\
 	The three expressions are compiled and their values bound to variables. The if-expression comes first, then comes a Mips {\tt BNE} instruction which branches if the boolean expression is not $0$. It then jumps to the then code.
 	If it does not branch, it runs the else and then jumps to the ending label which is after any of the instructions built from the if expressions.
 	\item {\tt Cat.MkTuple } \\
-	% TODO
+	The list of expressions is compiled and a name for each is kept. The names are then stored in a list along with their position in the list. The list is then stored in the heap. A pointer to the list is returned.
 	\item {\tt Cat.Case } \\
-	% TODO
+	The expression is compiled and the name is sent to the {\tt compileMatch} function to do all the work.
 \end{itemize}
 
 \section{Results}
-% Rapporten skal beskrive hvorvidt oversættelse og kørsel af eksempelprogram- mer (jvf. afsnit 8) giver den forventede opførsel, samt beskrivelse af afvigelser der- fra. Endvidere skal det vurderes, i hvilket omfang de udleverede testprogrammer er dækkende og der skal laves nye testprogrammer, der dækker de største mangler ved testen.
+% Rapporten skal beskrive hvorvidt oversættelse og kørsel af eksempelprogram- mer (jvf. afsnit 8) giver den forventede opførsel, samt beskrivelse af afvigelser derfra. Endvidere skal det vurderes, i hvilket omfang de udleverede testprogrammer er dækkende og der skal laves nye testprogrammer, der dækker de største mangler ved testen.
 
 % Kendte mangler i typechecker og oversætter skal beskrives, og i det omfang det er muligt, skal der laves forslag til hvordan disse evt. kan udbedres.
+
+% Cat.Equal på to tupler.
 
 \end{document}
