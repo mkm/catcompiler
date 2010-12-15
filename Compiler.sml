@@ -162,10 +162,10 @@ fun compileExp e vtable place =
             compileExp e2 vtable name2 @
             [
              Mips.BEQ (name1, name2, lbl1),
-             Mips.LI (place, makeconst 0),
+             Mips.LI (place, makeConst 0),
              Mips.J lbl2,
              Mips.LABEL lbl1,
-             Mips.LI (place, makeconst (~1)),
+             Mips.LI (place, makeConst (~1)),
              Mips.LABEL lbl2
             ]
         end
