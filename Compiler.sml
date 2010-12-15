@@ -187,24 +187,22 @@ fun compileExp e vtable place =
         in
             code1 @ code2 @ [Mips.XOR (place, t1, t2)]
         end
-      | Cat.And (e1, e2, pos) =>
-        let
-            val t1 = "_and1_"^newName()
-            val t2 = "_and2_"^newName()
-            val code1 = compileExp e1 vtable t1
-            val code2 = compileExp e2 vtable t2
-        in
-            code1 @ code2 @ [Mips.AND (place, t1, t2)]
-        end
+      | Cat.And (e1, e2, pos) => 
+				compileExp (Cat.If(
+														e1, 
+														Cat.If(
+															e2, 
+															Cat.True(pos), 
+															Cat.False(pos), pos), 
+														Cat.False(pos), pos)) vtable place
       | Cat.Or (e1, e2, pos) =>
-        let
-            val t1 = "_or1_"^newName()
-            val t2 = "_or2_"^newName()
-            val code1 = compileExp e1 vtable t1
-            val code2 = compileExp e2 vtable t2
-        in
-            code1 @ code2 @ [Mips.OR (place, t1, t2)]
-        end
+        compileExp (Cat.If(
+													e1, 
+													Cat.True(pos), 
+													Cat.If(
+														e2, 
+														Cat.True(pos), 
+														Cat.False(pos), pos), pos)) vtable place
       | Cat.If (e1,e2,e3,pos) =>
         let
             val if_ = "_if_"^newName()
