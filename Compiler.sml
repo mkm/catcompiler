@@ -140,7 +140,7 @@ fun compileExp e vtable place =
             code1 @ code2 @ [Mips.SUB (place,t1,t2)]
         end
       | Cat.Null (_, pos) =>
-        [Mips.ADDI(place, "$0", "$0")]
+        [Mips.ADDI(place, "0", "0")]
       | Cat.Let ([], expResult, _) => compileExp expResult vtable place
       | Cat.Let ((patBind, expBind, _)::ds, expResult, pos) =>
         let
