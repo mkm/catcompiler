@@ -36,7 +36,6 @@
 %type <Cat.Exp list> Exps2
 %type <Cat.Exp> Tuple
 %type <Cat.Exp> ParenExp
-%type <Cat.Exp list> TupleBody
 %type <Cat.Match> Match
 %type <Cat.Pat> Pat
 %type <Cat.Pat list> Pats
