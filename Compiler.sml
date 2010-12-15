@@ -241,15 +241,13 @@ fun compileExp e vtable place =
            Mips.SYSCALL]
       | Cat.MkTuple (es, t, pos) =>
         let
-            val fieldCount = length es
-            val places = List.tabulate (fieldCount, fn _ => "_tuple_" ^ newName ())
-            val fields = map (fn (e, localPlace) => compileExp e vtable localPlace) (ListPair.zip (es, places))
-            val loads = map (fn (i, localPlace) => Mips.SW (localPlace, place, makeConst (i * 4))) (ListPair.zip (range 0 (fieldCount - 1), places))
+            val tempName = "_tupletemp_" ^ newName ()
+            val heapName = "_tupleheap_" ^ newName ()
         in
-            List.concat fields @
-            [Mips.ADDI (HP, HP, makeConst (fieldCount * 4))] @
+            [Mips.MOVE (heapName, HP)] @
             [Mips.MOVE (place, HP)] @
-            loads
+            [Mips.ADDI (HP, HP, makeConst (length es * 4))] @
+            List.concat (map (fn e => compileExp e vtable tempName @ [Mips.SW (tempName, heapName, "0")] @ [Mips.ADDI (heapName, heapName, "4")]) es)
         end
 
 and compileMatch [] arg res endLabel failLabel vtable =
