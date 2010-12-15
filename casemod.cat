@@ -1,0 +1,15 @@
+type ii = (int,int)
+
+type bb = (bool,bool)
+
+fun achso : ii -> int
+  (m,n) =>
+    case (m=0,n=0):bb of
+      (false,false) => 3
+    | (true,false) => 2
+    | (true,true) => 1
+    | (false,true) => 4
+    end
+end
+
+write achso (read,read):ii

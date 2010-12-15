@@ -1,0 +1,10 @@
+fun achso : int -> int
+  m =>
+    case (m=0) of
+      false => 3
+    | true => 2
+    | x => 1
+    end
+end
+
+write achso (read)
