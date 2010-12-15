@@ -1,3 +1,6 @@
 type bb = (bool, bool)
 
-(true, false) : bb
+case (true, false) : bb of
+     @ => write 1
+   | x => write 2
+end

@@ -1,0 +1,4 @@
+case true of
+     true => write 3
+   | false => write 4
+end

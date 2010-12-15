@@ -5,8 +5,8 @@ ASM=java -jar Mars.jar
 
 SMLCFLAGS=-liberal
 
-RUNTESTS=fib.test case.test
-COMPTESTS=pair.type.asm ackermann.type.asm logic.type.asm option.type.asm qsort.type.asm reverse.type.asm rwlist.type.asm treesort.type.asm tuple.type.asm equal.type.asm
+RUNTESTS=fib.test case.test boolp.test tuple.test
+COMPTESTS=pair.type.asm ackermann.type.asm logic.type.asm option.type.asm qsort.type.asm reverse.type.asm rwlist.type.asm treesort.type.asm equal.type.asm
 OBJS=Cat.uo Compiler.uo Lexer.uo Mips.uo Parser.uo RegAlloc.uo Type.uo
 CC=./CC
 

@@ -80,8 +80,17 @@ fun compilePat p v vtable fail =
         in
             ([Mips.MOVE (xt,v)], (x,xt)::vtable)
         end
-      | _ => raise Error ("compilePat", (0, 0))
-                   
+      | Cat.TrueP pos => compilePat (Cat.NumP (~1, pos)) v vtable fail
+      | Cat.FalseP pos => compilePat (Cat.NumP (0, pos)) v vtable fail
+      | Cat.NullP pos => compilePat (Cat.NumP (0, pos)) v vtable fail
+      | Cat.TupleP ([], pos) => ([], vtable)
+      | Cat.TupleP (pat::pats, pos) =>
+        let
+            val (codeHead, vtableHead) = compilePat pat v vtable fail
+            val (codeTail, vtableTail) = compilePat pat v vtable fail
+        in
+            (codeHead @ codeTail, vtableHead @ vtableTail)
+        end
                    
 (* compile expression *)
 fun compileExp e vtable place =
