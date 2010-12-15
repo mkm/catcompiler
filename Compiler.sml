@@ -153,12 +153,21 @@ fun compileExp e vtable place =
       | Cat.False (pos) => compileExp (Cat.Num(0, pos)) vtable place
       | Cat.Equal (e1,e2,pos) =>
         let
-            val t1 = "_equal1_"^newName()
-            val t2 = "_equal2_"^newName()
-            val code1 = compileExp (Cat.Minus(e1,e2,pos)) vtable t1
-            val code2 = compileExp (Cat.Num (~1,pos)) vtable t2
+            val lbl1 = "_equaljump_" ^ newName ()
+            val lbl2 = "_equaljump_" ^ newName ()
+            val name1 = "_equalarg_" ^ newName ()
+            val name2 = "_equalarg_" ^ newName ()
         in
-            code1 @ code2 @ [Mips.XOR (place,t1,t2)]
+            compileExp e1 vtable name1 @
+            compileExp e2 vtable name2 @
+            [
+             Mips.BEQ (name1, name2, lbl1),
+             Mips.LI (place, makeconst 0),
+             Mips.J lbl2,
+             Mips.LABEL lbl1,
+             Mips.LI (place, makeconst (~1)),
+             Mips.LABEL lbl2
+            ]
         end
       | Cat.Less (e1,e2,pos) =>
         let
