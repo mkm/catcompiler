@@ -1,0 +1,7 @@
+type bb = (bool, bb)
+
+case (true, (false, @:bb):bb):bb of
+     @ => write 1
+   | (true, (false, @)) => write 2
+   | x => write 3
+end
