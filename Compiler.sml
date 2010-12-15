@@ -95,9 +95,10 @@ fun compilePat p v vtable fail =
                     (extractor @ code, vtable')
                 end
             val subPats = map compileSubPat (ListPair.zip (range 0 (patCount - 1), pats))
-            val result = foldr (fn ((x, y), (xs, ys)) => (x @ xs, y @ ys)) ([], vtable) subPats
+            val (code, vtable') = foldr (fn ((x, y), (xs, ys)) => (x @ xs, y @ ys)) ([], vtable) subPats
+            val code' = [Mips.BEQ (v, "0", fail)] @ code
         in
-            result
+            (code', vtable')
         end
                    
 (* compile expression *)
