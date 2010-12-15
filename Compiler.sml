@@ -83,13 +83,14 @@ fun compilePat p v vtable fail =
       | Cat.TrueP pos => compilePat (Cat.NumP (~1, pos)) v vtable fail
       | Cat.FalseP pos => compilePat (Cat.NumP (0, pos)) v vtable fail
       | Cat.NullP pos => compilePat (Cat.NumP (0, pos)) v vtable fail
-      | Cat.TupleP ([], pos) => ([], vtable)
-      | Cat.TupleP (pat::pats, pos) =>
+      | Cat.TupleP (pats, pos) =>
         let
-            val (codeHead, vtableHead) = compilePat pat v vtable fail
-            val (codeTail, vtableTail) = compilePat pat v vtable fail
+            val patCount = length pats
+            fun mkExtractor offset = []
+            val extractors = List.concat (List.tabulate (patCount, mkExtractor))
+            val code = []
         in
-            (codeHead @ codeTail, vtableHead @ vtableTail)
+            (code, [])
         end
                    
 (* compile expression *)
