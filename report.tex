@@ -11,6 +11,7 @@
 \lhead{Mikkel Kragh Mathiesen \& Rasmus Abrahamsen}
 \rhead{\today}
 %\write18{./iMake clean; ./iMake > out.tex}
+\write18{git diff initial Type.sml > /tmp/typediff.txt}
 \begin{document}
 \maketitle
 
@@ -18,6 +19,18 @@
 % For Parser.grm skal der kort forklares hvordan grammatikken er gjort entydig (ved omskrivning eller brug af operatorpræcedenserklæringer) samt beskrivelse af eventuelle ikke-åbenlyse løsninger, f.eks. i forbindelse med opbygning af abstrakt syntaks. Det skal bemærkes, at alle konflikter skal fjernes v.h.a. præcedenserklæringer eller omskrivning af syntaks. Med andre ord må MosML-yacc ikke rapportere konflikter i tabellen.
 
 Parsing of tuples with a single element has been problematic. We have solved it by matching comma separated expressions in parentheses. We then match said expressions with colon id.
+
+\begin{lstlisting}
+Exps1 : Exp { [$1] }
+  | Exp COMMA Exps1 { $1 :: $3 };
+
+Exps2 : Exp COMMA Exps1 {$1 :: $3 };
+
+ParenExp : LPAR Exp RPAR { $2 };
+
+Tuple : ParenExp COLON ID { Cat.MkTuple ([$1], #1 $3, $2) }
+  | LPAR Exps2 RPAR COLON ID { Cat.MkTuple ($2, #1 $5, $1) };
+\end{lstlisting}
 
 We have a few shift/reduce conflicts which we have chosen to ignore as we have not been able to make a test case in which it makes a difference.
 
@@ -29,24 +42,123 @@ We have a few shift/reduce conflicts which we have chosen to ignore as we have n
 	Returns {\tt bool}.
 	\item {\tt Cat.Equal} \\
 	The two expressions are evaluated to a type each. If both types are eiher {\tt int} or {\tt bool}, {\tt bool} will be returned.
+	\begin{lstlisting}
+| Cat.Equal (e1, e2, pos) =>
+  (case (checkExp e1 vtable ftable ttable,
+            checkExp e2 vtable ftable ttable) of
+          (Int,Int) => Bool
+       |(Bool,Bool) => Bool
+       |	(TyVar s1, TyVar s2) => 
+		    if s1 = s2 
+		    then Bool 
+		    else raise Error("Comparison of diff. types ",pos)
+       | _ => raise Error("Comparison of differing types ",pos))
+	\end{lstlisting}
 	\item {\tt Cat.Less} \\
 	Both expressions are evaluated and should be {\tt int} then {\tt bool} is returned.
+	\begin{lstlisting}
+| Cat.Less (e1, e2, pos) =>
+  (case (checkExp e1 vtable ftable ttable,
+         checkExp e2 vtable ftable ttable) of
+          (Int,Int) => Bool
+        | _ => raise Error ("Non-int argument to <",pos))
+	\end{lstlisting}
 	\item {\tt Cat.Not} \\
 	The expression is evaluated and should be {\tt bool} and {\tt bool} is returned.
+	\begin{lstlisting}
+| Cat.Not (e1, pos) =>
+    (case (checkExp e1 vtable ftable ttable) of
+	      Bool => Bool
+        | _ => raise Error ("Not has to be called with a boolean",pos))
+	\end{lstlisting}
 	\item {\tt Cat.And} \& {\tt Cat.Or} \\
 	Both expressions should be {\tt bool} and the result will be {\tt bool}.
+	\begin{lstlisting}
+| Cat.And (e1,e2,pos) =>
+  (case (checkExp e1 vtable ftable ttable,
+         checkExp e2 vtable ftable ttable) of
+       (Bool,Bool) => Bool
+     | _ => raise Error ("And needs two booleans",pos))
+| Cat.Or (e1,e2,pos) =>
+  (case (checkExp e1 vtable ftable ttable,
+         checkExp e2 vtable ftable ttable) of
+       (Bool,Bool) => Bool
+     | _ => raise Error ("Or needs two booleans",pos))
+	\end{lstlisting}
 	\item {\tt Cat.If} \\
 	The conditional expression should be {\tt bool} and the then-expression and else-expression should both have the same type.
+	\begin{lstlisting}
+| Cat.If (ec, e1, e2, pos) =>
+  let val (ct, t1, t2) = (
+         checkExp ec vtable ftable ttable,
+         checkExp e1 vtable ftable ttable, 
+         checkExp e2 vtable ftable ttable)
+   in
+     if t1 = t2 andalso ct = Bool
+     then t1
+     else raise Error ("Or needs two booleans",pos)
+   end
+	\end{lstlisting}
 	\item {\tt Cat.Let} \\
 	The declarations are evaluated and a symbol table is returned, which is used when evaluating the expression.
+	\begin{lstlisting}
+| Cat.Let(d, e, _) =>
+let
+    val vtable' = checkDec d vtable ftable ttable
+in
+    checkExp e vtable' ftable ttable
+end
+	\end{lstlisting}
 	\item {\tt Cat.MkTuple} \\
 	When creating a tuple, a list of expressions are received. These expressions are matched against the definition of the tuple type. Each element in the list is matched against each element in the definition of the tuple. If anything does not match or the lists have differing lengths, an exception is raised.
+	\begin{lstlisting}
+| Cat.MkTuple (exps, typname, pos) =>
+ let
+  fun x(exp::exps, (typ::typs) : CType list, pos, 
+	vtable, ftable, ttable) = 
+   let
+    val exptyp : CType = checkExp exp vtable 
+		ftable ttable
+   in
+    if exptyp = typ
+    then x(exps, typs, pos, vtable, ftable, 
+		ttable)
+    else raise Error ("Tuple of wrong type, 
+		expected "^ typeName exptyp ^" got " 
+		^ typeName typ,pos)
+   end
+  | x([], [], pos, _, _, _) = ()
+  | x(_,   _, pos, _, _, _) = raise Error 
+	("Tuple of wrong type",pos)
+ in
+    (case lookup typname ttable of
+         SOME (typs : CType list) => (x(exps, 
+typs, pos, vtable, ftable, ttable); TyVar (typname))
+        |       _ => raise Error ("Unknown type "^typname,pos))
+ end
+	\end{lstlisting}
 	\item {\tt Cat.Case} \\
 	The built-in function {\tt checkMatch} is called and does everything we need.
+	\begin{lstlisting}
+| Cat.Case(e, m, pos) => checkMatch m 
+(checkExp e vtable ftable ttable) vtable 
+ftable ttable pos
+	\end{lstlisting}
 	\item {\tt Cat.Null} \\
 	Returns {\tt TyVar name} of the {\tt Null}.
 \end{itemize}
 Declarations support pattern-matching. Therefore each expression for each patter needs to be checked to see if they have the same type.
+
+\begin{lstlisting}
+and checkDec [] vtable ftable ttable = vtable
+  | checkDec ((pat, exp, pos)::xs) vtable ftable ttable =
+    let
+        val expT = checkExp exp vtable ftable ttable
+        val vtable' = checkPat pat expT ttable pos
+    in
+        checkDec xs (combineTables vtable' vtable pos) ftable ttable
+    end
+\end{lstlisting}
 
 \section{Compiling}
 % For Compiler.sml skal kort beskrives, hvordan kode genereres for de nye konstruktioner. Brug evt. en form, der ligner figur 7.3 i Basics of Compiler Design.
@@ -59,21 +171,141 @@ Declarations support pattern-matching. Therefore each expression for each patter
 	Returns $0$.
 	\item {\tt Cat.Equal } \\
 	A new expression subtracting the expressions from each other is compiled and stored in a temporary variable which is then XOR-ed with $-1$.
+	\begin{lstlisting}
+| Cat.Equal (e1,e2,pos) =>
+  let
+    val lbl1 = "_equaljump_" ^ newName ()
+    val lbl2 = "_equaljump_" ^ newName ()
+    val name1 = "_equalarg_" ^ newName ()
+    val name2 = "_equalarg_" ^ newName ()
+  in
+    compileExp e1 vtable name1 @
+    compileExp e2 vtable name2 @
+    [
+     Mips.BEQ (name1, name2, lbl1),
+     Mips.LI (place, makeConst 0),
+     Mips.J lbl2,
+     Mips.LABEL lbl1,
+     Mips.LI (place, makeConst (~1)),
+     Mips.LABEL lbl2
+    ]
+  end
+	\end{lstlisting}
 	\item {\tt Cat.Less } \\
 	The two expressions are compiled and stored into two variables. A Mips {\tt SLT}-instruction (set-less-than) is added to compare the two expressions.
+	\begin{lstlisting}
+| Cat.Less (e1,e2,pos) =>
+  let
+    val t1 = "_less1_"^newName()
+    val t2 = "_less2_"^newName()
+    val code1 = compileExp e1 vtable t1
+    val code2 = compileExp e2 vtable t2
+  in
+    code1 @ code2 @ [Mips.SLT (place,t1,t2)]
+  end
+	\end{lstlisting}
 	\item {\tt Cat.Not } \\
 	An expression is compiled and the returning value is negated using the Mips {\tt XOR}-instruction which is the return value.
+	\begin{lstlisting}
+| Cat.Not (e, pos) =>
+  let
+      val t1 = "_not1_"^newName()
+      val code1 = compileExp e vtable t1
+      val t2 = "_not2_"^newName()
+      val code2 = compileExp (Cat.Num(~1,pos)) vtable t2
+  in
+      code1 @ code2 @ [Mips.XOR (place, t1, t2)]
+  end
+	\end{lstlisting}
 	\item {\tt Cat.And } \& {\tt Cat.Or } \\
 	Both expressions are compiled and their return values are used as inputs in the Mips {\tt AND}- or {\tt OR}-instruction.
+	\begin{lstlisting}
+    | Cat.And (e1, e2, pos) => 
+		compileExp (Cat.If(
+			e1, 
+			Cat.If(
+				e2, 
+				Cat.True(pos), 
+				Cat.False(pos), pos), 
+				Cat.False(pos), pos)) vtable place
+    | Cat.Or (e1, e2, pos) =>
+      compileExp (Cat.If(
+		e1, 
+		Cat.True(pos), 
+		Cat.If(
+			e2, 
+			Cat.True(pos), 
+			Cat.False(pos), pos), pos)) vtable place
+	\end{lstlisting}
 	\item {\tt Cat.Let } \\
 	The {\tt let} expression is built using the {\tt case} expression. For example {\tt let x = z in y} is equivalent to {\tt case z of x => y}.
+	\begin{lstlisting}
+| Cat.Let ([], expResult, _) => compileExp expResult 
+	vtable place
+| Cat.Let ((patBind, expBind, _)::ds, expResult, pos) =>
+  let
+    val rest = Cat.Let (ds, expResult, pos)
+    val r = Cat.Case (expBind, [(patBind, rest)], pos)
+  in
+    compileExp r vtable place
+  end
+	\end{lstlisting}
 	\item {\tt Cat.If } \\
 	The three expressions are compiled and their values bound to variables. The if-expression comes first, then comes a Mips {\tt BNE} instruction which branches if the boolean expression is not $0$. It then jumps to the then code.
 	If it does not branch, it runs the else and then jumps to the ending label which is after any of the instructions built from the if expressions.
+	\begin{lstlisting}
+| Cat.If (e1,e2,e3,pos) =>
+  let
+    val if_ = "_if_"^newName()
+    val then_ = "_then_"^newName()
+    val end_ = "_end_"^newName()
+    val if_code   = compileExp e1 vtable if_
+    val then_code = compileExp e2 vtable place
+    val else_code = compileExp e3 vtable place
+  in
+    if_code @ [Mips.BNE (if_, "0", then_)] 
+    @ else_code
+    @ [Mips.J(end_)]
+    @ [Mips.LABEL(then_)] @ then_code
+    @ [Mips.LABEL(end_)]
+  end
+	\end{lstlisting}
 	\item {\tt Cat.MkTuple } \\
 	The list of expressions is compiled and a name for each is kept. The names are then stored in a list along with their position in the list. The list is then stored in the heap. A pointer to the list is returned.
+	\begin{lstlisting}
+| Cat.MkTuple (es, t, pos) =>
+  let
+    val fieldCount = length es
+    val places = List.tabulate (fieldCount, 
+	fn _ => "_tuple_" ^ newName ())
+    val fields = map (fn (e, place) => compileExp 
+e vtable place) (ListPair.zip (es, places))
+    val loads = map (fn (i, place) => Mips.SW 
+(place, HP, makeConst (i * 4))) (ListPair.zip 
+	(range 0 (fieldCount - 1), places))
+  in
+    List.concat fields @
+    [Mips.ADDI (HP, HP, makeConst (fieldCount * 4))] @
+    loads @
+    [Mips.MOVE (place, HP)]
+  end
+	\end{lstlisting}
 	\item {\tt Cat.Case } \\
 	The expression is compiled and the name is sent to the {\tt compileMatch} function to do all the work.
+	\begin{lstlisting}
+| Cat.Case (exp, matches, pos) =>
+  let
+    val argPlace = "_casearg_" ^ newName ()
+    val argCode = compileExp exp vtable argPlace
+    val endLabel = "_caseend_" ^ newName ()
+    val failLabel = "_Error_"
+  in
+    argCode @
+    compileMatch matches argPlace 
+place endLabel failLabel vtable @
+    [Mips.LABEL endLabel]
+  end
+	\end{lstlisting}
 \end{itemize}
 
 \section{Results}
