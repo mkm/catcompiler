@@ -3,19 +3,23 @@
 \usepackage{fancyhdr}
 \usepackage[danish]{babel}
 \usepackage{verbatim}
+\usepackage{listings}
 \pagestyle{fancyplain}
 \author{Mikkel Kragh Mathiesen \& Rasmus Abrahamsen}
 \title{Catcompiler}
 \date{\today}
 \lhead{Mikkel Kragh Mathiesen \& Rasmus Abrahamsen}
 \rhead{\today}
+%\write18{./iMake clean; ./iMake > out.tex}
 \begin{document}
 \maketitle
 
 \section{Parsing}
 % For Parser.grm skal der kort forklares hvordan grammatikken er gjort entydig (ved omskrivning eller brug af operatorpræcedenserklæringer) samt beskrivelse af eventuelle ikke-åbenlyse løsninger, f.eks. i forbindelse med opbygning af abstrakt syntaks. Det skal bemærkes, at alle konflikter skal fjernes v.h.a. præcedenserklæringer eller omskrivning af syntaks. Med andre ord må MosML-yacc ikke rapportere konflikter i tabellen.
 
-Parsing of tuples with a single element has been problematic. We have solved it by matching comma separated expressions in parentheses. Then we match said expressions with colon id.
+Parsing of tuples with a single element has been problematic. We have solved it by matching comma separated expressions in parentheses. We then match said expressions with colon id.
+
+We have a few shift/reduce conflicts which we have chosen to ignore as we have not been able to make a test case in which it makes a difference.
 
 \section{Typechecking}
 % For Type.sml skal kort beskrives, hvordan typerne checkes for de nye konstruktioner. Brug evt. en form, der ligner figur 6.2 i Basics of Compiler Design.
@@ -73,10 +77,15 @@ Declarations support pattern-matching. Therefore each expression for each patter
 \end{itemize}
 
 \section{Results}
-% Rapporten skal beskrive hvorvidt oversættelse og kørsel af eksempelprogram- mer (jvf. afsnit 8) giver den forventede opførsel, samt beskrivelse af afvigelser derfra. Endvidere skal det vurderes, i hvilket omfang de udleverede testprogrammer er dækkende og der skal laves nye testprogrammer, der dækker de største mangler ved testen.
+
+%\lstinputlisting{out.tex}
+
+% Rapporten skal beskrive hvorvidt oversættelse og kørsel af eksempelprogrammer (jvf. afsnit 8) giver den forventede opførsel, samt beskrivelse af afvigelser derfra. Endvidere skal det vurderes, i hvilket omfang de udleverede testprogrammer er dækkende og der skal laves nye testprogrammer, der dækker de største mangler ved testen.
+
+In order to narrow down problems, we have been making simplified test cases covering various expression types.
 
 % Kendte mangler i typechecker og oversætter skal beskrives, og i det omfang det er muligt, skal der laves forslag til hvordan disse evt. kan udbedres.
 
-% Cat.Equal på to tupler.
+The formal specification of the programming language does not specify on which types the equality expression is defined. Therefore we have implemented equality on both {\tt int} and {\tt bool}. We have not done so for tuples as none of the included test files.
 
 \end{document}
